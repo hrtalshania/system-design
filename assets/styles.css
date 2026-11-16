@@ -3064,8 +3064,8 @@ a.pathmap-unit:hover {
 }
 
 dialog {
-  max-width: min(92vw, 1100px);
-  max-height: 90vh;
+  max-width: min(94vw, 1280px);
+  max-height: 92vh;
   padding: 0;
   border: 1px solid var(--line);
   border-radius: 14px;
@@ -3092,13 +3092,17 @@ dialog::backdrop {
 }
 
 .dialog-body {
+  max-height: calc(92vh - 54px);
   padding: 18px;
   overflow: auto;
 }
 
 .dialog-body svg {
-  max-width: 100%;
-  height: auto;
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin: 0 auto;
 }
 
 /* ---------- Responsive ---------- */
