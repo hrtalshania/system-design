@@ -264,7 +264,7 @@ a:hover {
   background: var(--bg-elev);
   color: var(--text);
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
 .icon-btn:hover {
@@ -273,7 +273,7 @@ a:hover {
 }
 
 .menu-btn {
-  display: none;
+  display: grid;
 }
 
 .data-popover {
@@ -327,9 +327,49 @@ a:hover {
 }
 
 .sidebar-scroll {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 14px 12px 40px;
+}
+
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex: 0 0 auto;
+  padding: 9px 10px 9px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.sidebar-title {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sidebar-close {
+  width: 30px;
+  height: 30px;
+  font-size: 12px;
+}
+
+@media (min-width: 861px) {
+  .main {
+    transition: margin-left 0.2s ease;
+  }
+
+  body.sidebar-collapsed .sidebar {
+    transform: translateX(-100%);
+  }
+
+  body.sidebar-collapsed .main {
+    margin-left: 0;
+  }
 }
 
 .sidebar-top {
@@ -2474,6 +2514,466 @@ a:hover {
   color: var(--green);
   font-size: 11px;
   font-weight: 700;
+}
+
+/* ---------- Course progress map ---------- */
+
+.map-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 18px 0 8px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-soft);
+}
+
+.view-switch {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-elev);
+}
+
+.view-switch-btn {
+  padding: 7px 13px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.view-switch-btn:hover {
+  color: var(--text);
+}
+
+.view-switch-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.map-toolbar-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.pathmap-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0 16px;
+}
+
+.pathmap-stat {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-elev);
+}
+
+.pathmap-stat.is-personal {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+  background: linear-gradient(180deg, var(--accent-soft), var(--bg-elev));
+}
+
+.pathmap-stat-label {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.pathmap-stat strong {
+  display: block;
+  margin: 5px 0 9px;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+
+.pathmap-stat small {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.pathmap-bar {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--bg-soft);
+  overflow: hidden;
+}
+
+.pathmap-stat.is-personal .pathmap-bar {
+  background: color-mix(in srgb, var(--accent) 16%, var(--bg-soft));
+}
+
+.pathmap-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+
+.pathmap-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 0 0 10px;
+  color: var(--text-soft);
+  font-size: 12px;
+}
+
+.pathmap-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pathmap-hint {
+  margin: 0 0 22px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.pathmap-key {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+}
+
+.pathmap-key.is-written {
+  border-color: var(--green);
+  background: var(--green);
+}
+
+.pathmap-key.is-planned {
+  background: var(--bg-soft);
+}
+
+.pathmap-key.is-done {
+  border-color: var(--accent);
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.pathmap-part {
+  margin: 0 0 26px;
+}
+
+.pathmap-part-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 10px;
+}
+
+.pathmap-part-head h2 {
+  margin: 0 0 3px;
+  font-size: 19px;
+}
+
+.pathmap-part-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.pathmap-track {
+  display: flex;
+  align-items: stretch;
+  padding: 14px 14px 18px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--line-strong) 55%, transparent) 1px, transparent 0) 0 0 / 16px 16px,
+    var(--bg-soft);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+}
+
+.pathmap-card {
+  display: flex;
+  flex: 0 0 200px;
+  flex-direction: column;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg-elev);
+  box-shadow: var(--shadow-sm);
+  scroll-snap-align: start;
+}
+
+.pathmap-card.is-written {
+  border-top: 3px solid var(--green);
+}
+
+.pathmap-card.is-progress {
+  border-top: 3px solid var(--amber);
+}
+
+.pathmap-card.is-planned {
+  border-style: dashed;
+  opacity: 0.82;
+}
+
+.pathmap-card.is-current {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent), var(--shadow-sm);
+}
+
+.pathmap-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.pathmap-num {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.pathmap-state {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pathmap-card.is-written .pathmap-state {
+  color: var(--green);
+}
+
+.pathmap-card.is-progress .pathmap-state {
+  color: var(--amber);
+}
+
+.pathmap-here {
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.pathmap-card h3 {
+  min-height: 38px;
+  margin: 0 0 4px;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.pathmap-card h3 a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.pathmap-card h3 a:hover {
+  color: var(--accent);
+}
+
+.pathmap-meta {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.pathmap-units {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.pathmap-unit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 22px;
+  padding: 0 5px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg-soft);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 9px;
+  text-decoration: none;
+}
+
+a.pathmap-unit:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.pathmap-unit.is-written {
+  border-color: color-mix(in srgb, var(--green) 30%, var(--line));
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.pathmap-unit.is-done {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.pathmap-unit.is-planned {
+  opacity: 0.7;
+}
+
+.pathmap-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.pathmap-card-foot a {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.pathmap-part:last-child .pathmap-card {
+  flex: 1 1 100%;
+}
+
+.pathmap-link {
+  position: relative;
+  flex: 0 0 44px;
+  align-self: center;
+  height: 2px;
+  margin: 0 2px;
+  background-image: linear-gradient(90deg, var(--line-strong) 55%, transparent 0);
+  background-repeat: repeat-x;
+  background-size: 8px 2px;
+}
+
+.pathmap-pulse {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+  animation: pathmap-travel 2.4s linear infinite;
+}
+
+@keyframes pathmap-travel {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(38px);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 860px) {
+  .map-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pathmap-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .pathmap-hint {
+    display: none;
+  }
+
+  .pathmap-track {
+    flex-direction: column;
+    overflow: visible;
+    padding: 14px;
+    scroll-snap-type: none;
+  }
+
+  .pathmap-card {
+    flex: 1 1 auto;
+  }
+
+  .pathmap-card h3 {
+    min-height: 0;
+  }
+
+  .pathmap-link {
+    flex: 0 0 30px;
+    width: 2px;
+    height: 30px;
+    margin: 2px auto;
+    background-image: linear-gradient(180deg, var(--line-strong) 55%, transparent 0);
+    background-repeat: repeat-y;
+    background-size: 2px 8px;
+  }
+
+  .pathmap-pulse {
+    top: 0;
+    left: -2px;
+    animation-name: pathmap-travel-down;
+  }
+}
+
+@keyframes pathmap-travel-down {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(24px);
+    opacity: 0;
+  }
 }
 
 /* ---------- Glossary / resources ---------- */

@@ -34,6 +34,8 @@ The course is written module by module, in order. Later modules assume the vocab
 
 Each written module opens with a **module intro** page: why the module exists, what you will be able to do, what to know before starting, and how the units fit together.
 
+The **course map** has two views: a readable list of every module and unit, and a visual progress map of module cards, unit chips and completion marks. The navigation sidebar collapses on desktop and becomes a slide-in drawer on narrow screens.
+
 ### Current status
 
 - **Modules 1–5 are written** — 37 path units.
@@ -310,7 +312,7 @@ Widgets must work with keyboard and pointer input, expose an `aria-live` verdict
 The project uses three layers because they catch different failures:
 
 1. **Validation** checks the shape of the course: 19 modules, 137 path units, expected IDs, one intro per written module, one quiz per unit, required headings, Mermaid blocks, internal links, glossary counts, HTTPS references, no external scripts, no CDN, no placeholder text.
-2. **Interaction tests** run the real runtime in jsdom: routing, quiz answers, widget state, lab checklists, search, notes, progress export/import, reset.
+2. **Interaction tests** run the real runtime in jsdom: routing, quiz answers, widget state, lab checklists, search, notes, progress export/import, reset, map view switching and the mobile navigation drawer.
 3. **Smoke tests** open every route in headless Chrome and assert rendered text, widget markers, quiz counts and Mermaid SVG output.
 
 Structural violations fail the build. Style issues — such as a page over 1,800 words — warn only. The thresholds live in `content-rules.json`; the reasoning lives in `docs/content-rules.md`.
@@ -322,7 +324,7 @@ Current reference state:
 5 module intros
 37 quizzes
 1,997 validation checks
-163 interaction checks
+177 interaction checks
 50 smoke routes
 13 length warnings (Modules 2–4; no structural failures)
 ```
@@ -332,7 +334,7 @@ Current reference state:
 ## 9. Progress, notes and privacy
 
 - Progress, quiz scores, lab checklists and notes are stored in `localStorage` on the current browser.
-- Keys: `sdpath.progress.v1` and `sdpath.theme.v1`.
+- Keys: `sdpath.progress.v1`, `sdpath.theme.v1`, `sdpath.sidebar.v1` and `sdpath.mapview.v1`.
 - The ⋯ menu exports and imports progress as JSON and resets it.
 - Nothing is sent anywhere. The course makes no network requests at runtime.
 - Search is local and runs against the embedded search index.

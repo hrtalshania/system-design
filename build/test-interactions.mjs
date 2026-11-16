@@ -506,6 +506,24 @@ check('map renders all modules', $$('.map-module').length === 19 + 16, `actual=$
 check('map sets the document title', document.title.includes('Course map'), document.title);
 check('map marks module 1 available', Boolean($('.map-module .badge.green')));
 check('map links written lessons', $$('.map-lessons a[href="#/lesson/part-1-m01-l01"]').length === 1);
+check('map starts in list view', !$('[data-map-list]').hidden && $('[data-map-graph]').hidden);
+check('progress map renders 19 module cards', $$('.pathmap-card').length === 19, `actual=${$$('.pathmap-card').length}`);
+check('progress map renders 137 unit chips', $$('[data-map-unit]').length === 137, `actual=${$$('[data-map-unit]').length}`);
+check(
+  'progress map shows module and unit totals',
+  /5 of 19/.test($('.pathmap-summary')?.textContent || '') && /37 of 137/.test($('.pathmap-summary')?.textContent || ''),
+  $('.pathmap-summary')?.textContent,
+);
+check('progress map marks five modules written', $$('.pathmap-card.is-written').length === 5, `actual=${$$('.pathmap-card.is-written').length}`);
+check('progress map highlights the current module', $$('.pathmap-card.is-current').length === 1, `actual=${$$('.pathmap-card.is-current').length}`);
+check('progress map links unit 1.1', $$('[data-map-unit][href="#/lesson/part-1-m01-l01"]').length === 1);
+$('[data-map-view="graph"]').click();
+await tick(30);
+check('map switches to the progress view', $('[data-map-list]').hidden && !$('[data-map-graph]').hidden);
+check('map view is persisted', window.localStorage.getItem('sdpath.mapview.v1') === 'graph', window.localStorage.getItem('sdpath.mapview.v1'));
+$('[data-map-view="list"]').click();
+await tick(30);
+check('map switches back to the list view', !$('[data-map-list]').hidden && $('[data-map-graph]').hidden);
 
 await go('#/glossary');
 check('glossary renders 90 terms', $$('.glossary-item').length === 90, `actual=${$$('.glossary-item').length}`);
@@ -548,6 +566,14 @@ check('reset clears the header count', $('#progress-pill')?.textContent === `0 /
 $('#menu-toggle').click();
 await tick(20);
 check('mobile sidebar opens', $('#sidebar').classList.contains('open') && $('#overlay').classList.contains('show'));
+check('mobile sidebar reports expanded', $('#menu-toggle').getAttribute('aria-expanded') === 'true');
+check('mobile sidebar offers a close button', Boolean($('#sidebar-close')));
+$('#sidebar-close').click();
+await tick(20);
+check('mobile sidebar close button closes the drawer', !$('#sidebar').classList.contains('open') && !$('#overlay').classList.contains('show'));
+check('mobile sidebar reports collapsed', $('#menu-toggle').getAttribute('aria-expanded') === 'false');
+$('#menu-toggle').click();
+await tick(20);
 $('#overlay').click();
 await tick(20);
 check('mobile sidebar closes', !$('#sidebar').classList.contains('open') && !$('#overlay').classList.contains('show'));

@@ -16,7 +16,8 @@ const routes = [
   {
     hash: '#/map',
     name: 'map',
-    checks: ['The whole path', 'Part 1 · Foundations', 'Part 3 · Under the hood', 'System Labs', 'Rate limiting'],
+    checks: ['The whole path', 'Part 1 · Foundations', 'Part 3 · Under the hood', 'System Labs', 'Rate limiting', 'Progress map', 'Modules written', '5 of 19', '37 of 137'],
+    counts: { 'pathmap-card': 19, 'data-map-unit': 137, 'pathmap-pulse': 16 },
   },
   {
     hash: '#/lesson/part-1-m01-l01',

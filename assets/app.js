@@ -4,6 +4,8 @@
 
   const STORAGE_KEY = 'sdpath.progress.v1';
   const THEME_KEY = 'sdpath.theme.v1';
+  const SIDEBAR_KEY = 'sdpath.sidebar.v1';
+  const MAP_VIEW_KEY = 'sdpath.mapview.v1';
 
   const lessons = [];
   const modules = [];
@@ -34,13 +36,15 @@
     currentModuleId: null,
     currentLabId: null,
     searchOpen: false,
+    sidebarCollapsed: localStorage.getItem(SIDEBAR_KEY) === 'collapsed',
+    mapView: localStorage.getItem(MAP_VIEW_KEY) === 'graph' ? 'graph' : 'list',
   };
 
   document.documentElement.dataset.theme = state.theme;
 
   document.body.innerHTML = `
     <header class="app-header">
-      <button class="icon-btn menu-btn" id="menu-toggle" aria-label="Open navigation" aria-expanded="false">☰</button>
+      <button class="icon-btn menu-btn" id="menu-toggle" aria-label="Open navigation" aria-expanded="true" aria-controls="sidebar" title="Show or hide navigation">☰</button>
       <a class="brand" href="#/home" aria-label="Course home">
         <span class="brand-mark">SD</span>
         <span class="brand-text">System Design Path <em>free edition</em></span>
@@ -89,6 +93,8 @@
   const importFile = document.getElementById('import-file');
   const diagramDialog = document.getElementById('diagram-dialog');
   const dialogBody = document.getElementById('dialog-body');
+  const menuToggle = document.getElementById('menu-toggle');
+  const desktopQuery = window.matchMedia('(min-width: 861px)');
 
   // ---------- Progress ----------
 
@@ -224,6 +230,10 @@
     const underHtml = underTheHood.map((part) => renderPartNav(part, true)).join('');
 
     sidebar.innerHTML = `
+      <div class="sidebar-head">
+        <span class="sidebar-title">Navigation</span>
+        <button type="button" class="icon-btn sidebar-close" id="sidebar-close" aria-label="Close navigation">✕</button>
+      </div>
       <div class="sidebar-scroll">
         <div class="sidebar-top">
           <a href="#/home">Course home</a>
@@ -345,7 +355,7 @@
       renderHome();
     }
 
-    closeMobileSidebar();
+    closeDrawer();
     window.scrollTo(0, 0);
   }
 
@@ -421,10 +431,120 @@
     `;
   }
 
+  function currentMapModule() {
+    if (state.currentModuleId) return moduleById.get(state.currentModuleId) || null;
+    const last = state.progress.lastLesson ? lessonById.get(state.progress.lastLesson) : null;
+    if (!last) return null;
+    return modules.find((module) => module.id === last.module.id && module.number === last.module.number) || null;
+  }
+
+  function renderPathMap() {
+    const counts = COURSE.meta?.counts || {};
+    const totalUnits = counts.pathUnits || lessons.length;
+    const writtenUnits = availableLessons.length;
+    const completedUnits = availableLessons.filter((lesson) => isComplete(lesson.id)).length;
+    const writtenModules = modules.filter((module) => module.writtenCount > 0).length;
+    const current = currentMapModule();
+    const percent = (value, total) => (total ? Math.round((value / total) * 100) : 0);
+
+    const unitChip = (lesson) => {
+      const done = isComplete(lesson.id);
+      const label = `${lesson.number} ${lesson.title}${done ? ' (completed)' : lesson.hasContent ? ' (written)' : ' (planned)'}`;
+      const className = `pathmap-unit ${done ? 'is-done' : lesson.hasContent ? 'is-written' : 'is-planned'}`;
+      if (!lesson.hasContent) {
+        return `<span class="${className}" data-map-unit title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">${escapeHtml(lesson.number)}</span>`;
+      }
+      return `<a class="${className}" data-map-unit href="#/lesson/${encodeURIComponent(lesson.id)}" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">${escapeHtml(lesson.number)}</a>`;
+    };
+
+    const moduleCard = (module) => {
+      const moduleLessons = module.lessons || [];
+      const done = moduleLessons.filter((lesson) => isComplete(lesson.id)).length;
+      const written = module.writtenCount || 0;
+      const minutes = moduleLessons.reduce((sum, lesson) => sum + (lesson.minutes || 0), 0);
+      const isCurrent = current && current.fullId === module.fullId;
+      const complete = moduleLessons.length > 0 && written === moduleLessons.length;
+      const stateClass = complete ? 'is-written' : written > 0 ? 'is-progress' : 'is-planned';
+      const stateLabel = complete ? 'Written' : written > 0 ? 'In progress' : 'Planned';
+      const title = module.hasIntro
+        ? `<a href="#/module/${encodeURIComponent(module.fullId)}">${escapeHtml(module.title)}</a>`
+        : escapeHtml(module.title);
+
+      return `
+        <article class="pathmap-card ${stateClass} ${isCurrent ? 'is-current' : ''}" data-map-node data-status="${module.status}">
+          <div class="pathmap-card-top">
+            <span class="pathmap-num">${String(module.number).padStart(2, '0')}</span>
+            ${isCurrent ? '<span class="pathmap-here">You are here</span>' : `<span class="pathmap-state">${stateLabel}</span>`}
+          </div>
+          <h3>${title}</h3>
+          <p class="pathmap-meta">${moduleLessons.length} ${moduleLessons.length === 1 ? 'unit' : 'units'} · ${minutes} min</p>
+          <div class="pathmap-units" role="group" aria-label="Units in module ${module.number}">${moduleLessons.map(unitChip).join('')}</div>
+          <div class="pathmap-card-foot">
+            <span>${done} of ${moduleLessons.length} done</span>
+            ${module.hasIntro ? `<a href="#/module/${encodeURIComponent(module.fullId)}">Open module →</a>` : ''}
+          </div>
+        </article>
+      `;
+    };
+
+    const partCard = (part) => {
+      const partModules = modules.filter((module) => module.part.number === part.number);
+      const partWritten = partModules.filter((module) => module.writtenCount > 0).length;
+      const cardHtml = partModules
+        .map((module, index) =>
+          index === 0
+            ? moduleCard(module)
+            : `<span class="pathmap-link" aria-hidden="true"><span class="pathmap-pulse"></span></span>${moduleCard(module)}`,
+        )
+        .join('');
+
+      return `
+        <section class="pathmap-part">
+          <header class="pathmap-part-head">
+            <div>
+              <h2>Part ${part.number} · ${escapeHtml(part.title)}</h2>
+              <p>${partModules.length} modules · ${partWritten} written</p>
+            </div>
+            <span class="badge ${partWritten ? 'green' : ''}">${partWritten} of ${partModules.length}</span>
+          </header>
+          <div class="pathmap-track">${cardHtml}</div>
+        </section>
+      `;
+    };
+
+    return `
+      <section class="pathmap-summary" aria-label="Course progress summary">
+        <div class="pathmap-stat">
+          <span class="pathmap-stat-label">Modules written</span>
+          <strong>${writtenModules} of ${modules.length}</strong>
+          <div class="pathmap-bar"><i style="width:${percent(writtenModules, modules.length)}%"></i></div>
+        </div>
+        <div class="pathmap-stat">
+          <span class="pathmap-stat-label">Units written</span>
+          <strong>${writtenUnits} of ${totalUnits}</strong>
+          <div class="pathmap-bar"><i style="width:${percent(writtenUnits, totalUnits)}%"></i></div>
+        </div>
+        <div class="pathmap-stat is-personal">
+          <span class="pathmap-stat-label">Your progress</span>
+          <strong>${completedUnits} of ${writtenUnits} written units</strong>
+          <div class="pathmap-bar"><i style="width:${percent(completedUnits, writtenUnits)}%"></i></div>
+          <small>${percent(completedUnits, writtenUnits)}% of what is available · ${percent(completedUnits, totalUnits)}% of the full path</small>
+        </div>
+      </section>
+
+      <div class="pathmap-legend">
+        <span><i class="pathmap-key is-written"></i>Written</span>
+        <span><i class="pathmap-key is-planned"></i>Planned</span>
+        <span><i class="pathmap-key is-done"></i>Unit completed by you</span>
+      </div>
+      <p class="pathmap-hint">Scroll sideways inside each part to follow the path. Unit chips open the lesson.</p>
+
+      ${parts.map(partCard).join('')}
+    `;
+  }
+
   function renderMap() {
     setDocumentTitle('Course map');
-    const pathParts = parts.filter((part) => part.number !== 3);
-    const underTheHood = parts.filter((part) => part.number === 3);
 
     const partHtml = (part) => `
       <section class="map-part">
@@ -474,30 +594,62 @@
         <h1>The whole path</h1>
         <p class="summary">${COURSE.meta?.counts?.pathUnits || 137} path units, ${COURSE.meta?.counts?.labs || 18} labs, ${COURSE.meta?.counts?.simulations || 19} simulations and ${systemLabs.length} system labs.</p>
       </div>
-      ${pathParts.map(partHtml).join('')}
-      ${underTheHood.map(partHtml).join('')}
-      <section class="map-part">
-        <h2>System Labs</h2>
-        ${systemLabs
-          .map(
-            (lab) => `
-              <details class="map-module">
-                <summary>
-                  <span class="badge">${escapeHtml(lab.difficulty || 'lab')}</span>
-                  <h3>${escapeHtml(lab.title)}</h3>
-                  <span class="module-count">${escapeHtml(lab.category || '')}</span>
-                </summary>
-                <div style="padding:0 14px 14px;color:var(--text-soft);font-size:13px">
-                  ${escapeHtml(lab.summary || '')}
-                  ${lab.steps ? `<div style="margin-top:6px;color:var(--muted);font-size:11px">${escapeHtml(lab.steps)}</div>` : ''}
-                  <div style="margin-top:8px"><a href="#/lab/${encodeURIComponent(lab.id)}">Open lab →</a></div>
-                </div>
-              </details>
-            `,
-          )
-          .join('')}
-      </section>
+
+      <div class="map-toolbar">
+        <div class="view-switch" role="group" aria-label="Course map view">
+          <button type="button" class="view-switch-btn ${state.mapView === 'list' ? 'active' : ''}" data-map-view="list" aria-pressed="${state.mapView === 'list'}">List</button>
+          <button type="button" class="view-switch-btn ${state.mapView === 'graph' ? 'active' : ''}" data-map-view="graph" aria-pressed="${state.mapView === 'graph'}">Progress map</button>
+        </div>
+        <p class="map-toolbar-note">Browse every module and unit, or switch to the visual map.</p>
+      </div>
+
+      <div class="map-list" data-map-list ${state.mapView === 'graph' ? 'hidden' : ''}>
+        ${parts.map(partHtml).join('')}
+        <section class="map-part">
+          <h2>System Labs</h2>
+          ${systemLabs
+            .map(
+              (lab) => `
+                <details class="map-module">
+                  <summary>
+                    <span class="badge">${escapeHtml(lab.difficulty || 'lab')}</span>
+                    <h3>${escapeHtml(lab.title)}</h3>
+                    <span class="module-count">${escapeHtml(lab.category || '')}</span>
+                  </summary>
+                  <div style="padding:0 14px 14px;color:var(--text-soft);font-size:13px">
+                    ${escapeHtml(lab.summary || '')}
+                    ${lab.steps ? `<div style="margin-top:6px;color:var(--muted);font-size:11px">${escapeHtml(lab.steps)}</div>` : ''}
+                    <div style="margin-top:8px"><a href="#/lab/${encodeURIComponent(lab.id)}">Open lab →</a></div>
+                  </div>
+                </details>
+              `,
+            )
+            .join('')}
+        </section>
+      </div>
+
+      <div class="map-graph" data-map-graph ${state.mapView === 'list' ? 'hidden' : ''}>
+        ${renderPathMap()}
+      </div>
     `;
+
+    applyMapView();
+  }
+
+  function applyMapView() {
+    const list = main.querySelector('[data-map-list]');
+    const graph = main.querySelector('[data-map-graph]');
+    if (!list || !graph) return;
+
+    const showGraph = state.mapView === 'graph';
+    list.hidden = showGraph;
+    graph.hidden = !showGraph;
+
+    main.querySelectorAll('[data-map-view]').forEach((button) => {
+      const active = button.dataset.mapView === state.mapView;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
   }
 
   function lessonNeighbours(lesson) {
@@ -3794,6 +3946,16 @@
     state.searchOpen = true;
   }
 
+  function setupMapView() {
+    main.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-map-view]');
+      if (!button) return;
+      state.mapView = button.dataset.mapView === 'graph' ? 'graph' : 'list';
+      localStorage.setItem(MAP_VIEW_KEY, state.mapView);
+      applyMapView();
+    });
+  }
+
   function setupSearch() {
     searchInput.addEventListener('input', () => showSearch(searchInput.value));
     searchInput.addEventListener('focus', () => {
@@ -3837,7 +3999,7 @@
       } else if (event.key === 'Escape') {
         searchResults.hidden = true;
         dataPopover.hidden = true;
-        closeMobileSidebar();
+        closeDrawer();
       }
     });
   }
@@ -3852,16 +4014,68 @@
     renderMermaid(main, true);
   }
 
-  function openMobileSidebar() {
+  function openDrawer() {
     sidebar.classList.add('open');
     overlay.classList.add('show');
-    document.getElementById('menu-toggle').setAttribute('aria-expanded', 'true');
+    syncSidebar();
+    document.getElementById('sidebar-close')?.focus();
   }
 
-  function closeMobileSidebar() {
+  function closeDrawer() {
     sidebar.classList.remove('open');
     overlay.classList.remove('show');
-    document.getElementById('menu-toggle')?.setAttribute('aria-expanded', 'false');
+    syncSidebar();
+  }
+
+  function closeSidebar() {
+    if (desktopQuery.matches) {
+      state.sidebarCollapsed = true;
+      localStorage.setItem(SIDEBAR_KEY, 'collapsed');
+      syncSidebar();
+      menuToggle.focus();
+      return;
+    }
+    closeDrawer();
+    menuToggle.focus();
+  }
+
+  function toggleSidebar() {
+    if (desktopQuery.matches) {
+      state.sidebarCollapsed = !state.sidebarCollapsed;
+      localStorage.setItem(SIDEBAR_KEY, state.sidebarCollapsed ? 'collapsed' : 'expanded');
+      syncSidebar();
+      return;
+    }
+    if (sidebar.classList.contains('open')) closeDrawer();
+    else openDrawer();
+  }
+
+  function syncSidebar() {
+    const desktop = desktopQuery.matches;
+    const drawerOpen = sidebar.classList.contains('open');
+
+    if (desktop) {
+      document.body.classList.toggle('sidebar-collapsed', state.sidebarCollapsed);
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+      sidebar.inert = state.sidebarCollapsed;
+    } else {
+      document.body.classList.remove('sidebar-collapsed');
+      sidebar.inert = !drawerOpen;
+    }
+
+    const expanded = desktop ? !state.sidebarCollapsed : drawerOpen;
+    menuToggle.setAttribute('aria-expanded', String(expanded));
+    menuToggle.setAttribute('aria-label', expanded ? 'Close navigation' : 'Open navigation');
+
+    const closeButton = document.getElementById('sidebar-close');
+    if (closeButton) {
+      closeButton.setAttribute('aria-label', desktop ? 'Collapse navigation' : 'Close navigation');
+    }
+  }
+
+  function handleViewportChange() {
+    closeDrawer();
   }
 
   function setupDataMenu() {
@@ -3946,6 +4160,7 @@
 
     applyTheme();
     setupSearch();
+    setupMapView();
     setupDataMenu();
 
     document.getElementById('theme-toggle').addEventListener('click', () => {
@@ -3953,12 +4168,15 @@
       applyTheme();
     });
 
-    document.getElementById('menu-toggle').addEventListener('click', () => {
-      if (sidebar.classList.contains('open')) closeMobileSidebar();
-      else openMobileSidebar();
+    menuToggle.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', closeDrawer);
+    sidebar.addEventListener('click', (event) => {
+      if (event.target.closest('#sidebar-close')) closeSidebar();
     });
 
-    overlay.addEventListener('click', closeMobileSidebar);
+    if (desktopQuery.addEventListener) desktopQuery.addEventListener('change', handleViewportChange);
+    else if (desktopQuery.addListener) desktopQuery.addListener(handleViewportChange);
+    syncSidebar();
 
     document.getElementById('dialog-close').addEventListener('click', () => diagramDialog.close());
     diagramDialog.addEventListener('click', (event) => {
