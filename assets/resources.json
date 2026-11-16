@@ -1,0 +1,82 @@
+[
+  {
+    "title": "The System Design Primer",
+    "description": "A broad, free GitHub guide with tradeoffs, building blocks and interview-style exercises.",
+    "url": "https://github.com/donnemartin/system-design-primer"
+  },
+  {
+    "title": "Google SRE Book",
+    "description": "Free online book on reliability, SLOs, error budgets, overload and incident response.",
+    "url": "https://sre.google/sre-book/table-of-contents/"
+  },
+  {
+    "title": "AWS Well-Architected Framework",
+    "description": "A practical checklist for reliability, performance, cost, security and operational excellence.",
+    "url": "https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html"
+  },
+  {
+    "title": "AWS Builders' Library",
+    "description": "Short, free articles on retries, timeouts, backoff, load shedding and distributed systems failure.",
+    "url": "https://aws.amazon.com/builders-library/"
+  },
+  {
+    "title": "Martin Fowler: Microservices",
+    "description": "The classic free article on service boundaries, independent deployment and the costs of distribution.",
+    "url": "https://martinfowler.com/articles/microservices.html"
+  },
+  {
+    "title": "microservices.io",
+    "description": "Patterns for sagas, outbox, API gateways, service discovery and data ownership.",
+    "url": "https://microservices.io/patterns/index.html"
+  },
+  {
+    "title": "PostgreSQL Documentation",
+    "description": "Authoritative docs for data modeling, indexes, EXPLAIN, transactions and replication.",
+    "url": "https://www.postgresql.org/docs/current/"
+  },
+  {
+    "title": "Redis Documentation",
+    "description": "Caching, TTLs, eviction, atomic operations, Lua scripts and pub/sub.",
+    "url": "https://redis.io/docs/latest/"
+  },
+  {
+    "title": "Apache Kafka Documentation",
+    "description": "Topics, partitions, consumer groups, offsets and delivery guarantees.",
+    "url": "https://kafka.apache.org/documentation/"
+  },
+  {
+    "title": "Dynamo: Amazon's Highly Available Key-value Store",
+    "description": "The paper behind leaderless replication, quorums and eventual consistency.",
+    "url": "https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf"
+  },
+  {
+    "title": "Raft Consensus Algorithm",
+    "description": "The readable paper and visual explanation of leader election and replicated logs.",
+    "url": "https://raft.github.io/"
+  },
+  {
+    "title": "Kafka: a Distributed Messaging System for Log Processing",
+    "description": "The original paper on partitioned logs, consumer groups and throughput.",
+    "url": "https://notes.stephenholiday.com/Kafka.pdf"
+  },
+  {
+    "title": "Cloudflare Learning Center",
+    "description": "Clear explanations of CDNs, DNS, anycast, DDoS, caching and edge networks.",
+    "url": "https://www.cloudflare.com/learning/"
+  },
+  {
+    "title": "MDN: 429 Too Many Requests",
+    "description": "The HTTP semantics of rate limiting and the Retry-After header.",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/429"
+  },
+  {
+    "title": "RFC 6585",
+    "description": "The specification that defines 429 Too Many Requests.",
+    "url": "https://www.rfc-editor.org/rfc/rfc6585"
+  },
+  {
+    "title": "High Scalability",
+    "description": "Architecture write-ups and failure stories from real systems.",
+    "url": "https://highscalability.com/"
+  }
+]

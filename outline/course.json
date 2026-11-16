@@ -1,0 +1,1899 @@
+{
+  "meta": {
+    "title": "The Complete System Design Path — Free Interactive Edition",
+    "subtitle": "An independent, offline study edition inspired by the public sys0 syllabus.",
+    "source": "https://sys0.in/path",
+    "sourceLabs": "https://sys0.in/labs",
+    "generatedAt": "2026-11-16T10:42:25.583Z",
+    "counts": {
+      "parts": 3,
+      "modules": 19,
+      "pathUnits": 137,
+      "labs": 18,
+      "simulations": 19,
+      "systemLabs": 16
+    }
+  },
+  "parts": [
+    {
+      "id": "part-1",
+      "number": 1,
+      "title": "Foundations",
+      "modules": [
+        {
+          "id": "m01",
+          "number": 1,
+          "title": "What is system design?",
+          "summary": "The choices you make when building a system.",
+          "sourceStatus": "2 free lessons",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-1-m01-l01",
+              "number": "1.1",
+              "title": "What system design means",
+              "summary": "The choices you make when building a system.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 3,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m01-l02",
+              "number": "1.2",
+              "title": "The design process",
+              "summary": "How one sentence in a meeting becomes a line of code.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 8,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m01-l03",
+              "number": "1.3",
+              "title": "Functional vs non-functional requirements",
+              "summary": "Nobody hands you a list of requirements. Here's how to find them.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 8,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m01-l04",
+              "number": "1.4",
+              "title": "Everything is a tradeoff",
+              "summary": "Every choice gives something up. Here's how to choose.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m01-l05",
+              "number": "1.5",
+              "title": "Lab: Design system for a clinic",
+              "summary": "A doctor wants online booking. Find out what she actually needs.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 30,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        },
+        {
+          "id": "m02",
+          "number": 2,
+          "title": "Start with a simple system",
+          "summary": "One client, one server, one database. Design its API and its data before anything else.",
+          "sourceStatus": "Rest coming Oct 2026",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-1-m02-l01",
+              "number": "2.1",
+              "title": "From requirements to requests",
+              "summary": "Three requirements, more than a dozen requests. Here's how to find them.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 9,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m02-l02",
+              "number": "2.2",
+              "title": "Data modeling",
+              "summary": "Code gets rewritten. Data stays. Here's how to shape it.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m02-l03",
+              "number": "2.3",
+              "title": "Indexes",
+              "summary": "Your API tells you which lookups run most. Index those, check the plan with EXPLAIN - and see what every index costs your writes.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 15,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m02-l04",
+              "number": "2.4",
+              "title": "Designing the API",
+              "summary": "A few basic rules that make an API easy to use and easy to change.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m02-l05",
+              "number": "2.5",
+              "title": "Choosing a database",
+              "summary": "What each kind of database gives up, and how to pick one for your app.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 14,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m02-l06",
+              "number": "2.6",
+              "title": "Reverse proxy",
+              "summary": "What a reverse proxy is, and why we put one in front of our API server.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 11,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m02-l07",
+              "number": "2.7",
+              "title": "How do you know it's working?",
+              "summary": "Turn \"fast\" and \"always up\" into numbers you can measure: p99 instead of the average, error rate, and how close each part is to its limit.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 8,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m02-l08",
+              "number": "2.8",
+              "title": "Proof: load testing one server",
+              "summary": "We built it in Go and load-tested it from another machine. Where one server breaks - before and after the index.",
+              "type": "Read",
+              "kind": "experiment",
+              "minutes": 8,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m02-l09",
+              "number": "2.9",
+              "title": "Lab: Design the clinic's API and data",
+              "summary": "Turn the clinic's requests into an API, then into tables and indexes.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 25,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        },
+        {
+          "id": "m03",
+          "number": 3,
+          "title": "Caching",
+          "summary": "Cache the data you read often, so the database isn't queried every time - and keep the cache from serving stale data.",
+          "sourceStatus": "Coming Nov 2026",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-1-m03-l01",
+              "number": "3.1",
+              "title": "Why cache, and what",
+              "summary": "Hits, misses and TTL. Cache only when you must, and pick data by how often it changes.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m03-l02",
+              "number": "3.2",
+              "title": "Where the cache lives",
+              "summary": "In-process or a cache server like Redis - and why one server needs nothing more than the first.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m03-l03",
+              "number": "3.3",
+              "title": "Reading and writing with a cache",
+              "summary": "Cache-aside, read-through, write-through and refresh-ahead - and why the database is written first.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 15,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m03-l04",
+              "number": "3.4",
+              "title": "Cache invalidation",
+              "summary": "TTLs and invalidating on write. Cache data to show it, but check the database before you act on it.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m03-l05",
+              "number": "3.5",
+              "title": "When the cache is full",
+              "summary": "LRU, LFU and the rest. Watch the hit rate and the eviction rate to see if your cache is working.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m03-l06",
+              "number": "3.6",
+              "title": "When caching makes things worse",
+              "summary": "Keys that expire together, a hot key that expires, lookups for data that doesn't exist - and the fix for each.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 15,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m03-l07",
+              "number": "3.7",
+              "title": "Proof: the menu page with a cache",
+              "summary": "The same load test with and without the cache: requests per second, p99, database CPU and hit rate. Then every key expires at once.",
+              "type": "Read",
+              "kind": "experiment",
+              "minutes": 8,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m03-l08",
+              "number": "3.8",
+              "title": "Lab: What can the clinic cache?",
+              "summary": "Cache the doctor list. Never the free slots - a stale slot is a double booking.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 25,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        },
+        {
+          "id": "m04",
+          "number": 4,
+          "title": "When one server isn't enough",
+          "summary": "Dinner traffic outgrows one server. Scale vertically, then horizontally, and fix what breaks on server two.",
+          "sourceStatus": "Coming Nov 2026",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-1-m04-l01",
+              "number": "4.1",
+              "title": "Vertical scaling",
+              "summary": "Our load test found where one server breaks. The first fix is a bigger machine - and it has a ceiling.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m04-l02",
+              "number": "4.2",
+              "title": "Horizontal scaling",
+              "summary": "More machines instead of a bigger one: no ceiling, and no single server to lose - but now there are two.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m04-l03",
+              "number": "4.3",
+              "title": "Load balancers",
+              "summary": "A reverse proxy with more than one server behind it: how it picks a server, what happens when one dies - and why the balancer can't be a single point of failure.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m04-l04",
+              "number": "4.4",
+              "title": "Stateless servers",
+              "summary": "Why a login breaks on server two, and where sessions, cache and photos go instead.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 15,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m04-l05",
+              "number": "4.5",
+              "title": "Connection pooling",
+              "summary": "Every server opens its own database connections. Add servers and you hit the database's limit while it's barely busy - pools and database proxies.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m04-l06",
+              "number": "4.6",
+              "title": "Object storage: where the photos go",
+              "summary": "Dish photos don't belong on a server's disk or in the database. A bucket holds them, and the app uploads straight to it.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m04-l07",
+              "number": "4.7",
+              "title": "CDN: a cache near the user",
+              "summary": "Serve menu photos from close to the customer, not from your servers.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m04-l08",
+              "number": "4.8",
+              "title": "Proof: two servers behind a load balancer",
+              "summary": "The load test that broke one server, run again against two. What doubled, and what didn't.",
+              "type": "Read",
+              "kind": "experiment",
+              "minutes": 8,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m04-l09",
+              "number": "4.9",
+              "title": "Lab: Does the clinic need a second server?",
+              "summary": "The Monday 9am rush, a $50 budget, and the numbers that decide.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 25,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        },
+        {
+          "id": "m05",
+          "number": 5,
+          "title": "When one database isn't enough",
+          "summary": "The servers scale out, but every query still goes to one database. Add read replicas, then deal with what copies bring: lag, failover, backups and recovery.",
+          "sourceStatus": "Coming Nov 2026",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-1-m05-l01",
+              "number": "5.1",
+              "title": "Read replicas",
+              "summary": "Our load test's next limit is the database. Keep writes on one primary, copy it, and send reads to the copies.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m05-l02",
+              "number": "5.2",
+              "title": "Replication lag",
+              "summary": "Copies fall behind the primary. Why a customer can't find the order they just placed, and how to read your own writes.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m05-l03",
+              "number": "5.3",
+              "title": "When the primary dies",
+              "summary": "Promote a replica: automatic or manual, the writes you can lose, and what “three nines” really allows.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m05-l04",
+              "number": "5.4",
+              "title": "Backups and recovery",
+              "summary": "A replica copies your mistakes too. Backups, point-in-time restore, and testing that a restore works.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m05-l05",
+              "number": "5.5",
+              "title": "Proof: one primary, two replicas",
+              "summary": "The load test that maxed out one database, run again with two replicas. Then we kill the primary and time the failover.",
+              "type": "Read",
+              "kind": "experiment",
+              "minutes": 8,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m05-l06",
+              "number": "5.6",
+              "title": "Lab: Add read replicas to the clinic",
+              "summary": "The database is the bottleneck. Add replicas, handle replication lag, and plan failover and backups.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 25,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        },
+        {
+          "id": "m06",
+          "number": 6,
+          "title": "Live updates",
+          "summary": "Some news can't wait for the app to ask. Choose between asking often and keeping a connection open - and make it work across many servers.",
+          "sourceStatus": "Coming Dec 2026",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-1-m06-l01",
+              "number": "6.1",
+              "title": "Polling, SSE, WebSockets, push",
+              "summary": "Ask every few seconds, or keep a connection open. Four ways to get news to the restaurant and the customer, what each costs the server, and why polling is often enough.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m06-l02",
+              "number": "6.2",
+              "title": "Live updates across many servers",
+              "summary": "The restaurant's tablet is connected to server 1, but the new order lands on server 2. Redis pub/sub joins them. And when the tablet's Wi-Fi drops, it fetches what it missed from the database - the push is fast, the database is the truth.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m06-l03",
+              "number": "6.3",
+              "title": "Proof: 10,000 order screens",
+              "summary": "Load-test 10,000 open order screens asking every 5 seconds, then holding one connection each. Then send a new order through two servers, and cut a tablet's connection mid-rush.",
+              "type": "Read",
+              "kind": "experiment",
+              "minutes": 8,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m06-l04",
+              "number": "6.4",
+              "title": "Lab: Add live updates to the clinic",
+              "summary": "Tell patients in the waiting room the moment Dr. Rao is running late - from any server, without them refreshing.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 25,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        },
+        {
+          "id": "m07",
+          "number": 7,
+          "title": "Background jobs",
+          "summary": "Not everything has to happen before the response. Move slow work to a queue and workers - and make sure a job that runs twice does no harm.",
+          "sourceStatus": "Coming Dec 2026",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-1-m07-l01",
+              "number": "7.1",
+              "title": "Why the user shouldn't wait",
+              "summary": "The order is slow because of an SMS the customer didn't need yet. Which work must happen before the response, and which can happen after.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m07-l02",
+              "number": "7.2",
+              "title": "A queue in the database you have",
+              "summary": "A jobs table and a worker that polls it. Why two workers grab the same job, and how row locks and SKIP LOCKED stop it. Often all you need.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m07-l03",
+              "number": "7.3",
+              "title": "Queues and workers",
+              "summary": "Our database is already the busiest part, so jobs move to a dedicated queue. Producers, workers, and a queue that absorbs the dinner spike.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 15,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m07-l04",
+              "number": "7.4",
+              "title": "When a job fails",
+              "summary": "A slow SMS provider now holds up workers instead of customers, and the queue piles up. Timeouts, retries with backoff, acknowledgements, and idempotent workers - because a job can run twice. And a dead-letter queue for jobs that never succeed.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 14,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m07-l05",
+              "number": "7.5",
+              "title": "Proof: take the SMS out of the order",
+              "summary": "Load-test orders with a slow SMS provider, then with a queue. Then kill a worker mid-refund and count the refunds, with and without an idempotency key.",
+              "type": "Read",
+              "kind": "experiment",
+              "minutes": 8,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m07-l06",
+              "number": "7.6",
+              "title": "Lab: Add a queue to the clinic",
+              "summary": "Send the day-before appointment reminders through a queue and workers - every one on time, and none twice.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 25,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        },
+        {
+          "id": "m08",
+          "number": 8,
+          "title": "Rate limiting",
+          "summary": "Not every request deserves a reply. Decide how much each client may ask for, and keep that limit across many servers.",
+          "sourceStatus": "Coming Dec 2026",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-1-m08-l01",
+              "number": "8.1",
+              "title": "Why limit requests",
+              "summary": "Bots, buggy apps and one greedy client. Who to limit (user, IP, API key), what to send back (429 and Retry-After), and where the limit lives.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m08-l02",
+              "number": "8.2",
+              "title": "Counting requests",
+              "summary": "Fixed window and the burst at its edge, sliding window, and token bucket - which lets a real user burst a little.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 14,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m08-l03",
+              "number": "8.3",
+              "title": "One limit across many servers",
+              "summary": "Three servers counting alone allow three times the limit. One counter in Redis, updated in one step so two servers can't both slip through.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m08-l04",
+              "number": "8.4",
+              "title": "Proof: stop the OTP flood",
+              "summary": "Flood the login from another machine and count the SMS sent: no limit, a limit on each server, then one limit in Redis.",
+              "type": "Read",
+              "kind": "experiment",
+              "minutes": 8,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m08-l05",
+              "number": "8.5",
+              "title": "Lab: Add rate limits to the clinic",
+              "summary": "Stop bots grabbing every Monday slot, without blocking patients who book honestly.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 25,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        },
+        {
+          "id": "m09",
+          "number": 9,
+          "title": "Growing big",
+          "summary": "Years of data, many cities, many teams. The cheap steps first - archive and partition - then the two hardest ones, put off as long as you can.",
+          "sourceStatus": "Coming Dec 2026",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-1-m09-l01",
+              "number": "9.1",
+              "title": "Old data you rarely read",
+              "summary": "Almost every query asks about this week. Move old orders to cheap storage, and keep what the law says you must keep.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m09-l02",
+              "number": "9.2",
+              "title": "Partitioning a table",
+              "summary": "Split the orders table by month inside one database. Removing a month becomes instant instead of one huge DELETE - and why it barely speeds up a query that already has an index.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m09-l03",
+              "number": "9.3",
+              "title": "Sharding",
+              "summary": "When one machine can't hold it: split the data by city across databases. What a shard key is, what you lose (a query across all cities), and why it comes last. The deep dive is in Part 2.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 15,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m09-l04",
+              "number": "9.4",
+              "title": "Splitting into services",
+              "summary": "Microservices solve a people problem. Here's how to tell when you have it, and what it costs - like following one slow order across five services.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m09-l05",
+              "number": "9.5",
+              "title": "Proof: clear out an old month",
+              "summary": "Every month the oldest orders move to the archive. Remove one month from 30 million orders twice - row by row, then by dropping its partition - while new orders keep coming in. Compare the time, the new orders' speed, and the disk freed.",
+              "type": "Read",
+              "kind": "experiment",
+              "minutes": 8,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m09-l06",
+              "number": "9.6",
+              "title": "Lab: Ten years of clinic bookings",
+              "summary": "400 clinics and ten years of appointments. Archive the old ones and split the rest by month - then decide whether it needs shards. (It doesn't.)",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 25,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        },
+        {
+          "id": "m10",
+          "number": 10,
+          "title": "Putting it together",
+          "summary": "Design a whole system from a blank page, and explain your choices out loud.",
+          "sourceStatus": "Coming Dec 2026",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-1-m10-l01",
+              "number": "10.1",
+              "title": "The design interview",
+              "summary": "It's the design process from Module 1, done in 45 minutes.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m10-l02",
+              "number": "10.2",
+              "title": "Back-of-the-envelope estimation",
+              "summary": "Turn users into requests per second, storage and bandwidth - fast enough to do in an interview.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m10-l03",
+              "number": "10.3",
+              "title": "Drawing it and talking tradeoffs",
+              "summary": "Never say “the best”. Say what you chose, what you gave up, and why.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-1-m10-l04",
+              "number": "10.4",
+              "title": "Capstone: Design the whole app",
+              "summary": "The food delivery app, from requirements to fifty cities, on your own.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 45,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "part-2",
+      "number": 2,
+      "title": "Distributed systems",
+      "modules": [
+        {
+          "id": "m11",
+          "number": 11,
+          "title": "Microservices",
+          "summary": "Splitting the app into services: where to draw the boundaries, how services call each other, and how to trace a request across them.",
+          "sourceStatus": "Coming Jan 2027",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-2-m11-l01",
+              "number": "11.1",
+              "title": "Service boundaries",
+              "summary": "Split by business capability, not by table. Each service owns its data, and other services don't read its database.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m11-l02",
+              "number": "11.2",
+              "title": "Synchronous vs asynchronous calls",
+              "summary": "Use a direct call when you need the answer before replying, and a queue when you don't. Payment needs an answer; sending an SMS doesn't.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m11-l03",
+              "number": "11.3",
+              "title": "REST vs gRPC",
+              "summary": "REST and JSON for public APIs, gRPC with a shared schema between services, and the tradeoffs of each.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m11-l04",
+              "number": "11.4",
+              "title": "API gateway and service discovery",
+              "summary": "A single entry point for the apps, and how services find each other when instances are added and removed.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m11-l05",
+              "number": "11.5",
+              "title": "Backend for frontend",
+              "summary": "The customer app, the restaurant tablet and the rider app need different data. A separate backend for each client, and when one gateway is enough.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m11-l06",
+              "number": "11.6",
+              "title": "Aggregating data from several services",
+              "summary": "The order page needs data from the order, restaurant and rider services. Call them in parallel, combine the results, and decide what to return when one of them fails.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m11-l07",
+              "number": "11.7",
+              "title": "Authentication across services",
+              "summary": "The auth service signs a JWT with its private key (RS256), and every other service checks it with the public key from a JWKS endpoint - no call to the auth service per request. Key rotation, and how services authenticate each other.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m11-l08",
+              "number": "11.8",
+              "title": "Distributed tracing",
+              "summary": "Pass one request ID through every call, and use traces to find which service made an order slow.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m11-l09",
+              "number": "11.9",
+              "title": "Proof: one process vs five services",
+              "summary": "Place an order in one process, then across five services. Compare latency and find the slow call in the trace.",
+              "type": "Read",
+              "kind": "experiment",
+              "minutes": 8,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m11-l10",
+              "number": "11.10",
+              "title": "Lab: Split the order flow",
+              "summary": "Design the services for ordering, payment and dispatch, and choose how each pair communicates.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 30,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        },
+        {
+          "id": "m12",
+          "number": 12,
+          "title": "Problems in distributed systems",
+          "summary": "Things that work on one machine and fail across many: timeouts, retries, clocks, counters and locks. Each lesson covers the basic fix and points to the module with the full solution.",
+          "sourceStatus": "Coming Feb 2027",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-2-m12-l01",
+              "number": "12.1",
+              "title": "Partial failure and timeouts",
+              "summary": "You can't tell a slow machine from a crashed one. After a timeout, you don't know whether the payment went through.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m12-l02",
+              "number": "12.2",
+              "title": "Retry storms and cascading failures",
+              "summary": "When the payment service slows down, every caller retries, and retries multiply at each layer. Backoff, jitter and retry budgets.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m12-l03",
+              "number": "12.3",
+              "title": "Circuit breakers and load shedding",
+              "summary": "Stop calling a failing service and return a fallback. Under overload, reject some requests so the rest still succeed.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m12-l04",
+              "number": "12.4",
+              "title": "Tail latency",
+              "summary": "A page that calls ten services hits at least one service's p99 on most requests. How fan-out makes tail latency matter.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m12-l05",
+              "number": "12.5",
+              "title": "Clocks and ordering",
+              "summary": "Clocks on different machines drift. Last-write-wins can lose updates, and timestamps can't reliably order events.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m12-l06",
+              "number": "12.6",
+              "title": "Duplicate and out-of-order messages",
+              "summary": "“Order cancelled” can arrive before “order placed”, and “order paid” can arrive twice. Why this happens, and why handlers must be idempotent.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m12-l07",
+              "number": "12.7",
+              "title": "Inconsistent data",
+              "summary": "The order is saved but the “paid” event is never sent. A customer updates their address and the next page shows the old one. Two writes in two places, with no shared transaction.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m12-l08",
+              "number": "12.8",
+              "title": "Counters and limits across machines",
+              "summary": "Stock counts that oversell, per-server rate limits that allow too much traffic, and auto-increment IDs that collide.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m12-l09",
+              "number": "12.9",
+              "title": "Locks and leaders",
+              "summary": "A lock in one process doesn't protect anything on another machine. A lease can expire during a pause, leaving two machines that both think they're the leader.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m12-l10",
+              "number": "12.10",
+              "title": "Proof: one slow service",
+              "summary": "Slow down the payment service under load and measure what retries do to the app. Then add backoff, a circuit breaker and load shedding, and measure again.",
+              "type": "Read",
+              "kind": "experiment",
+              "minutes": 8,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m12-l11",
+              "number": "12.11",
+              "title": "Lab: Inject failures into the clinic",
+              "summary": "Add latency, stop a machine, skew a clock and split the network. Predict the effect on bookings, then test it.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 30,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        },
+        {
+          "id": "m13",
+          "number": 13,
+          "title": "Replication in depth",
+          "summary": "Keeping copies of data on several machines: replication modes, leader election, consistency, and resolving conflicts.",
+          "sourceStatus": "Coming Mar 2027",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-2-m13-l01",
+              "number": "13.1",
+              "title": "Sync, async and failover",
+              "summary": "What happens when the leader fails: lost writes, split brain and fencing.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 15,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m13-l02",
+              "number": "13.2",
+              "title": "Leader election and Raft",
+              "summary": "How nodes agree on a leader and a log, and why you use etcd or ZooKeeper instead of implementing it.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 18,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m13-l03",
+              "number": "13.3",
+              "title": "Consistency models",
+              "summary": "Read-your-writes, monotonic reads, linearizability and eventual consistency, with examples from the app.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 15,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m13-l04",
+              "number": "13.4",
+              "title": "Leaderless and quorums",
+              "summary": "Dynamo-style replication: R + W > N, and what it does and doesn't guarantee.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 15,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m13-l05",
+              "number": "13.5",
+              "title": "Conflict resolution",
+              "summary": "Last-write-wins, version vectors and CRDTs.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m13-l06",
+              "number": "13.6",
+              "title": "CAP and PACELC",
+              "summary": "What CAP says and doesn't say, and the latency vs consistency tradeoff you make every day.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m13-l07",
+              "number": "13.7",
+              "title": "Lab: Choose consistency levels",
+              "summary": "Menu, cart, payment, rider location: choose a consistency level for each and justify it.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 30,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        },
+        {
+          "id": "m14",
+          "number": 14,
+          "title": "Partitioning in depth",
+          "summary": "Splitting data across machines while avoiding hot spots, expensive queries and costly rebalancing.",
+          "sourceStatus": "Coming Mar 2027",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-2-m14-l01",
+              "number": "14.1",
+              "title": "Range vs hash partitioning",
+              "summary": "How each method splits the data, and what it does to your queries.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m14-l02",
+              "number": "14.2",
+              "title": "Consistent hashing",
+              "summary": "Add a machine and move only a small part of the data.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 15,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m14-l03",
+              "number": "14.3",
+              "title": "Hot keys",
+              "summary": "When one key gets most of the traffic, like a very popular restaurant.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m14-l04",
+              "number": "14.4",
+              "title": "Queries across shards",
+              "summary": "Secondary indexes, scatter-gather and request routing.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m14-l05",
+              "number": "14.5",
+              "title": "IDs without a central counter",
+              "summary": "Snowflake IDs, UUIDs, and why order sometimes matters.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m14-l06",
+              "number": "14.6",
+              "title": "Lab: Reshard without downtime",
+              "summary": "Add shards under live traffic without losing orders.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 30,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        },
+        {
+          "id": "m15",
+          "number": 15,
+          "title": "Messaging: Kafka and pub/sub",
+          "summary": "Services publish events instead of calling each other in a chain: pub/sub, Kafka, fan-out and delivery guarantees.",
+          "sourceStatus": "Coming Apr 2027",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-2-m15-l01",
+              "number": "15.1",
+              "title": "Pub/sub",
+              "summary": "The order service publishes “order placed” without knowing which services consume it.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m15-l02",
+              "number": "15.2",
+              "title": "How Kafka works",
+              "summary": "Topics, partitions and offsets, and why reading a message doesn't delete it.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 15,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m15-l03",
+              "number": "15.3",
+              "title": "Kafka as a queue",
+              "summary": "Consumer groups split the work, the partition count limits how many consumers you can run, and slow consumers build up lag.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m15-l04",
+              "number": "15.4",
+              "title": "Fan-out and fan-in",
+              "summary": "Sending one event to many services, and combining several events into one result, such as waiting for payment and restaurant confirmation before assigning a rider.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m15-l05",
+              "number": "15.5",
+              "title": "Message ordering",
+              "summary": "Kafka keeps order only within a partition. Choose the key so all events for one order go to the same partition.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m15-l06",
+              "number": "15.6",
+              "title": "At most, at least, exactly once",
+              "summary": "What a message system can guarantee, and why exactly-once in practice means idempotent consumers.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m15-l07",
+              "number": "15.7",
+              "title": "Lab: Event-driven order flow",
+              "summary": "Connect order, payment and rider services with events, then take one down.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 30,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        },
+        {
+          "id": "m16",
+          "number": 16,
+          "title": "Transactions across services",
+          "summary": "Placing an order writes to three services. How to keep them consistent when any of them can fail partway through.",
+          "sourceStatus": "Coming Apr 2027",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-2-m16-l01",
+              "number": "16.1",
+              "title": "Isolation levels",
+              "summary": "Lost updates and write skew within one database, before adding more.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 15,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m16-l02",
+              "number": "16.2",
+              "title": "Outbox and change data capture",
+              "summary": "Save to the database and publish an event reliably, without losing either.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m16-l03",
+              "number": "16.3",
+              "title": "Two-phase commit",
+              "summary": "Commit across two databases, why it can get stuck, and why services rarely use it.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m16-l04",
+              "number": "16.4",
+              "title": "Sagas",
+              "summary": "A sequence of local transactions with compensating steps: refund the payment if no restaurant accepts the order.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 15,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m16-l05",
+              "number": "16.5",
+              "title": "Locks, leases and fencing tokens",
+              "summary": "Distributed locks with etcd or ZooKeeper, and fencing tokens to make them safe.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m16-l06",
+              "number": "16.6",
+              "title": "Lab: Order saga",
+              "summary": "Run an order across payment, restaurant and rider services, crash each one in turn, and make sure no customer is charged for an order that won't be delivered.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 30,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        },
+        {
+          "id": "m17",
+          "number": 17,
+          "title": "Events and streams",
+          "summary": "Event sourcing, CQRS, stream processing and batch processing.",
+          "sourceStatus": "Coming May 2027",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-2-m17-l01",
+              "number": "17.1",
+              "title": "Event sourcing and CQRS",
+              "summary": "Store every change as an event instead of only the current state, and when not to.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m17-l02",
+              "number": "17.2",
+              "title": "Stream processing",
+              "summary": "Windows, late events and aggregating data as it arrives.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 15,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m17-l03",
+              "number": "17.3",
+              "title": "Batch and analytics",
+              "summary": "OLTP vs OLAP, data warehouses, and running reports without slowing down orders.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m17-l04",
+              "number": "17.4",
+              "title": "Lab: Live orders per city",
+              "summary": "Count orders per city as they arrive, handling late and duplicate events, and compare the result with the nightly batch.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 30,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        },
+        {
+          "id": "m18",
+          "number": 18,
+          "title": "Availability and going global",
+          "summary": "Setting an uptime target, what each extra nine costs, and running in multiple regions.",
+          "sourceStatus": "Coming May 2027",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-2-m18-l01",
+              "number": "18.1",
+              "title": "Availability and the nines",
+              "summary": "99.9% allows about nine hours of downtime a year, 99.99% under one. How components in series lower availability, and how redundancy raises it.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m18-l02",
+              "number": "18.2",
+              "title": "Multi-region",
+              "summary": "Active-passive vs active-active, and where writes go.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 15,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m18-l03",
+              "number": "18.3",
+              "title": "Geo-routing",
+              "summary": "How DNS, anycast and edge locations route each user to the nearest region.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m18-l04",
+              "number": "18.4",
+              "title": "Disaster recovery",
+              "summary": "RPO, RTO, cross-region backups and chaos testing.",
+              "type": "Read",
+              "kind": "lesson",
+              "minutes": 12,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-2-m18-l05",
+              "number": "18.5",
+              "title": "Lab: Region failover",
+              "summary": "Fail over a whole region and measure the data lost.",
+              "type": "Lab",
+              "kind": "lab",
+              "minutes": 30,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "part-3",
+      "number": 3,
+      "title": "Under the hood",
+      "modules": [
+        {
+          "id": "m19",
+          "number": 19,
+          "title": "Classic algorithms in action",
+          "summary": "The algorithms under every big system, as simulations: run them, break them, and see why they work.",
+          "sourceStatus": "Coming Jun 2027",
+          "status": "planned",
+          "lessons": [
+            {
+              "id": "part-3-m19-l01",
+              "number": "19.1",
+              "title": "Consistent hashing",
+              "summary": "Add a server to the ring and watch which keys move - then add virtual nodes.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l02",
+              "number": "19.2",
+              "title": "Bloom filter",
+              "summary": "“Definitely not” or “maybe”: tune its size and count the false positives.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l03",
+              "number": "19.3",
+              "title": "HyperLogLog",
+              "summary": "Count millions of unique visitors in 12 KB of memory.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l04",
+              "number": "19.4",
+              "title": "Count-min sketch and top-K",
+              "summary": "Find tonight's trending dishes without counting every one exactly.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l05",
+              "number": "19.5",
+              "title": "Geohash and quadtree",
+              "summary": "Find the nearest rider without checking every rider in the city.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l06",
+              "number": "19.6",
+              "title": "Trie",
+              "summary": "Autocomplete: suggestions after every letter typed.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l07",
+              "number": "19.7",
+              "title": "Inverted index",
+              "summary": "How search finds every menu with “paneer” in it.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l08",
+              "number": "19.8",
+              "title": "B-tree vs LSM tree",
+              "summary": "Two ways to store data on disk: fast reads or fast writes.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l09",
+              "number": "19.9",
+              "title": "Write-ahead log",
+              "summary": "Crash the database mid-write, then watch it recover.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l10",
+              "number": "19.10",
+              "title": "Merkle tree",
+              "summary": "Find what differs between two replicas without comparing everything.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l11",
+              "number": "19.11",
+              "title": "Snowflake IDs",
+              "summary": "Unique, sortable IDs from many machines - until a clock jumps back.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l12",
+              "number": "19.12",
+              "title": "Lamport and vector clocks",
+              "summary": "Put events in order when no clock can be trusted.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l13",
+              "number": "19.13",
+              "title": "Gossip and failure detection",
+              "summary": "How a cluster spreads news and notices a dead machine.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l14",
+              "number": "19.14",
+              "title": "Quorum reads and writes",
+              "summary": "Change N, R and W, kill a node, and see what readers get.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l15",
+              "number": "19.15",
+              "title": "Raft",
+              "summary": "Elect a leader, replicate a log, then cut the network.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l16",
+              "number": "19.16",
+              "title": "Leases and fencing tokens",
+              "summary": "A paused lock holder wakes up and tries to write.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l17",
+              "number": "19.17",
+              "title": "CRDTs",
+              "summary": "Two offline phones edit the same cart. Merge them without losing anything.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l18",
+              "number": "19.18",
+              "title": "Fan-out on write vs read",
+              "summary": "Post as a celebrity with 10 million followers, and watch the feed build.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            },
+            {
+              "id": "part-3-m19-l19",
+              "number": "19.19",
+              "title": "Sharded counters",
+              "summary": "Count a million likes a second without one hot row.",
+              "type": "Simulate",
+              "kind": "simulation",
+              "minutes": 10,
+              "status": "planned",
+              "contentPath": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "systemLabs": [
+    {
+      "id": "lab-bitly",
+      "title": "Design your own Bitly",
+      "category": "URL shortener",
+      "summary": "Billions of redirects, a few writes, and IDs that never collide.",
+      "difficulty": "easy",
+      "availability": "Free",
+      "steps": "13 steps · ~45 min",
+      "status": "free"
+    },
+    {
+      "id": "lab-udemy-like-database",
+      "title": "Design a Udemy-like database",
+      "category": "Data modeling",
+      "summary": "Courses, lessons, enrolments and progress: a database from its requirements.",
+      "difficulty": "easy",
+      "availability": "Free",
+      "steps": "14 steps · ~75 min",
+      "status": "free"
+    },
+    {
+      "id": "lab-youtube",
+      "title": "Design your own YouTube",
+      "category": "Video platform",
+      "summary": "Upload, transcode, and stream at every quality.",
+      "difficulty": "medium",
+      "availability": "Soon",
+      "steps": "",
+      "status": "planned"
+    },
+    {
+      "id": "lab-instagram",
+      "title": "Design your own Instagram",
+      "category": "Photo feed",
+      "summary": "Fan-out on write or on read - and the celebrity who breaks both.",
+      "difficulty": "medium",
+      "availability": "Soon",
+      "steps": "",
+      "status": "planned"
+    },
+    {
+      "id": "lab-whatsapp",
+      "title": "Design your own WhatsApp",
+      "category": "Chat app",
+      "summary": "Messages delivered in order, with ticks, to phones that are often offline.",
+      "difficulty": "medium",
+      "availability": "Soon",
+      "steps": "",
+      "status": "planned"
+    },
+    {
+      "id": "lab-spotify",
+      "title": "Design your own Spotify",
+      "category": "Music streaming",
+      "summary": "Stream any song instantly, to millions, on any network.",
+      "difficulty": "medium",
+      "availability": "Soon",
+      "steps": "",
+      "status": "planned"
+    },
+    {
+      "id": "lab-google-maps",
+      "title": "Design your own Google Maps",
+      "category": "Route ETA",
+      "summary": "Routes and arrival times that follow live traffic.",
+      "difficulty": "hard",
+      "availability": "Soon",
+      "steps": "",
+      "status": "planned"
+    },
+    {
+      "id": "lab-gmail",
+      "title": "Design your own Gmail",
+      "category": "Email service",
+      "summary": "Send, receive, search and never lose a message.",
+      "difficulty": "medium",
+      "availability": "Soon",
+      "steps": "",
+      "status": "planned"
+    },
+    {
+      "id": "lab-google-docs",
+      "title": "Design your own Google Docs",
+      "category": "Collaborative editor",
+      "summary": "Many people typing in the same document, and nobody's edit lost.",
+      "difficulty": "hard",
+      "availability": "Soon",
+      "steps": "",
+      "status": "planned"
+    },
+    {
+      "id": "lab-reddit",
+      "title": "Design your own Reddit",
+      "category": "Ranked feed",
+      "summary": "Votes pouring in, and a ranking that stays fresh and fair.",
+      "difficulty": "medium",
+      "availability": "Soon",
+      "steps": "",
+      "status": "planned"
+    },
+    {
+      "id": "lab-discord",
+      "title": "Design your own Discord",
+      "category": "Online status",
+      "summary": "Who's online right now, for a hundred million users.",
+      "difficulty": "medium",
+      "availability": "Soon",
+      "steps": "",
+      "status": "planned"
+    },
+    {
+      "id": "lab-dropbox",
+      "title": "Design your own Dropbox",
+      "category": "File sync",
+      "summary": "Keep every device's files in sync, and send only what changed.",
+      "difficulty": "medium",
+      "availability": "Soon",
+      "steps": "",
+      "status": "planned"
+    },
+    {
+      "id": "lab-swiggy",
+      "title": "Design your own Swiggy",
+      "category": "Delivery dispatch",
+      "summary": "Pick the right rider for every order, as riders and orders move.",
+      "difficulty": "hard",
+      "availability": "Soon",
+      "steps": "",
+      "status": "planned"
+    },
+    {
+      "id": "lab-bookmyshow",
+      "title": "Design your own BookMyShow",
+      "category": "Ticket booking",
+      "summary": "Hold a seat, take the payment, never sell it twice.",
+      "difficulty": "medium",
+      "availability": "Soon",
+      "steps": "",
+      "status": "planned"
+    },
+    {
+      "id": "lab-razorpay",
+      "title": "Design your own Razorpay",
+      "category": "Payment system",
+      "summary": "Money moves exactly once, even when every network call fails.",
+      "difficulty": "hard",
+      "availability": "Soon",
+      "steps": "",
+      "status": "planned"
+    },
+    {
+      "id": "lab-dynamodb",
+      "title": "Design your own DynamoDB",
+      "category": "Key-value store",
+      "summary": "A Dynamo-style store that stays up when machines die.",
+      "difficulty": "hard",
+      "availability": "Soon",
+      "steps": "",
+      "status": "planned"
+    }
+  ]
+}

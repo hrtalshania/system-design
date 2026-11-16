@@ -1,0 +1,302 @@
+[
+  {
+    "term": "p99",
+    "definition": "The 99th percentile latency: 99% of requests finish faster than this number, and 1% are slower. It exposes the tail that an average hides."
+  },
+  {
+    "term": "Latency",
+    "definition": "How long one request takes from the user's point of view. Usually measured in milliseconds."
+  },
+  {
+    "term": "Throughput",
+    "definition": "How many requests or jobs a system completes per unit of time, such as requests per second."
+  },
+  {
+    "term": "Availability",
+    "definition": "The fraction of time a system is able to serve requests. 99.9% allows about 8.8 hours of downtime per year."
+  },
+  {
+    "term": "Consistency",
+    "definition": "A promise about which version of the data a reader sees. Strong consistency means everyone sees the latest committed write."
+  },
+  {
+    "term": "Functional requirement",
+    "definition": "A behavior the system must perform: book a slot, cancel an appointment, send a reminder."
+  },
+  {
+    "term": "Non-functional requirement",
+    "definition": "A quality target the system must meet: latency, availability, consistency, security, cost or maintainability."
+  },
+  {
+    "term": "Tradeoff",
+    "definition": "What you give up when you choose one design over another. Every meaningful design decision has one."
+  },
+  {
+    "term": "Bottleneck",
+    "definition": "The part of the system that limits the whole. Speeding up anything else does not raise total throughput until the bottleneck moves."
+  },
+  {
+    "term": "Cache",
+    "definition": "A fast copy of data kept closer to the reader. It trades freshness and memory for lower latency and less database load."
+  },
+  {
+    "term": "TTL",
+    "definition": "Time to live: how long a cached value is allowed to exist before it must be refreshed or evicted."
+  },
+  {
+    "term": "Hit rate",
+    "definition": "The fraction of cache reads served from the copy: hits / (hits + misses). Database load follows the miss rate."
+  },
+  {
+    "term": "Cache-aside",
+    "definition": "A caching pattern where the application checks the cache first, reads the database on a miss, and writes the copy back."
+  },
+  {
+    "term": "Read-through",
+    "definition": "A caching pattern where the cache client fetches from the database on a miss, moving the fill logic out of application code."
+  },
+  {
+    "term": "Write-through",
+    "definition": "A caching pattern that writes the database and the cache synchronously before returning, keeping the copy warm at the cost of a second write."
+  },
+  {
+    "term": "Write-behind",
+    "definition": "A caching pattern that acknowledges a write from the cache and flushes to the database later. Fast, but acknowledged writes can be lost if the cache fails."
+  },
+  {
+    "term": "Cache invalidation",
+    "definition": "Dropping or replacing cached copies when the source changes. Usually a delete after commit, backed by a TTL for missed paths."
+  },
+  {
+    "term": "Cache stampede",
+    "definition": "Many concurrent requests miss the same popular key and rebuild it at once, flooding the database with identical work."
+  },
+  {
+    "term": "Cache avalanche",
+    "definition": "A large set of keys expires at the same moment, so the database receives the combined miss load in one burst."
+  },
+  {
+    "term": "Cache penetration",
+    "definition": "Repeated lookups of keys that do not exist. Every request misses and reaches the database unless absence is cached or filtered."
+  },
+  {
+    "term": "Hot key",
+    "definition": "A single key that receives a disproportionate share of traffic, enough to saturate one cache node or shard."
+  },
+  {
+    "term": "LRU",
+    "definition": "Least recently used: an eviction policy that discards the key not read for the longest time. Good for temporal locality, vulnerable to scans."
+  },
+  {
+    "term": "LFU",
+    "definition": "Least frequently used: an eviction policy that discards the key with the fewest reads. Protects hot keys from bursts but needs aging as popularity changes."
+  },
+  {
+    "term": "Negative caching",
+    "definition": "Caching a not-found result for a short TTL so repeated lookups of missing keys do not reach the database."
+  },
+  {
+    "term": "Single-flight",
+    "definition": "Coalescing concurrent misses for the same key so only one request rebuilds the value and the others wait for its result."
+  },
+  {
+    "term": "Index",
+    "definition": "A data structure that makes a particular lookup fast, at the cost of extra storage and slower writes."
+  },
+  {
+    "term": "Primary key",
+    "definition": "The column or columns that uniquely identify a row in a table."
+  },
+  {
+    "term": "Foreign key",
+    "definition": "A column that points to a primary key in another table, expressing a relationship between rows."
+  },
+  {
+    "term": "Reverse proxy",
+    "definition": "A server that sits in front of application servers and forwards requests to them. It can handle TLS, routing, compression and load balancing."
+  },
+  {
+    "term": "Load balancer",
+    "definition": "A reverse proxy with multiple servers behind it. It chooses a server for each request and stops sending traffic to unhealthy servers."
+  },
+  {
+    "term": "Stateless server",
+    "definition": "A server that keeps no user session state between requests. Any server can handle the next request, which makes horizontal scaling easier."
+  },
+  {
+    "term": "Connection pool",
+    "definition": "A small set of reusable database connections shared by many requests. It protects the database from too many simultaneous connections."
+  },
+  {
+    "term": "Replica",
+    "definition": "A copy of a database kept on another machine. Read replicas serve reads; a primary handles writes."
+  },
+  {
+    "term": "Replication lag",
+    "definition": "How far a replica is behind the primary. A read from a lagging replica can miss a write that just succeeded."
+  },
+  {
+    "term": "Failover",
+    "definition": "Promoting a replica or standby to take over when the primary fails."
+  },
+  {
+    "term": "Shard",
+    "definition": "A horizontal slice of data stored on its own database. Sharding splits data across machines, usually by a shard key."
+  },
+  {
+    "term": "Queue",
+    "definition": "A buffer that holds work until a worker is ready to process it. Queues absorb spikes and decouple the producer from the consumer."
+  },
+  {
+    "term": "Idempotent",
+    "definition": "An operation that produces the same result even if it runs twice. Retries are safe only when the operation is idempotent."
+  },
+  {
+    "term": "Idempotency key",
+    "definition": "A unique key attached to a request so the server can detect a retry and return the original result instead of doing the work twice."
+  },
+  {
+    "term": "Rate limit",
+    "definition": "A cap on how many requests a client may make in a time window. It protects the system from bots, bugs and abuse."
+  },
+  {
+    "term": "429 Too Many Requests",
+    "definition": "The HTTP status code for a request rejected by a rate limit. A Retry-After header can tell the client when to try again."
+  },
+  {
+    "term": "Backoff",
+    "definition": "Waiting longer between retries, often with random jitter, so a struggling service is not hammered by synchronized retries."
+  },
+  {
+    "term": "Circuit breaker",
+    "definition": "A failure detector that stops calling a failing service for a while and returns a fallback instead."
+  },
+  {
+    "term": "Load shedding",
+    "definition": "Deliberately rejecting some requests under overload so the rest can still succeed."
+  },
+  {
+    "term": "CAP theorem",
+    "definition": "During a network partition, a distributed system can preserve consistency or availability, but not both. It is a partition-time choice, not a permanent label."
+  },
+  {
+    "term": "Quorum",
+    "definition": "A minimum number of nodes that must agree for a read or write to count, often a majority of replicas."
+  },
+  {
+    "term": "Event",
+    "definition": "A record that something happened, such as order placed or payment captured. Events let services react without direct calls."
+  },
+  {
+    "term": "Saga",
+    "definition": "A sequence of local transactions across services, with compensating actions that undo earlier steps if a later step fails."
+  },
+  {
+    "term": "Outbox",
+    "definition": "A table that stores events in the same transaction as the business change, so a background publisher can send them reliably."
+  },
+  {
+    "term": "CDN",
+    "definition": "A content delivery network: servers close to users that cache static and sometimes dynamic content."
+  },
+  {
+    "term": "Object storage",
+    "definition": "Storage for files such as photos and videos, addressed by a key and served over HTTP rather than stored in a database row."
+  },
+  {
+    "term": "Observability",
+    "definition": "The ability to understand a system's internal state from its outputs: logs, metrics, traces and events."
+  },
+  {
+    "term": "Distributed tracing",
+    "definition": "Following one request across many services by passing a shared trace ID and recording each span."
+  },
+  {
+    "term": "Consistent hashing",
+    "definition": "A way to assign keys to servers so adding or removing a server moves only a small fraction of the keys."
+  },
+  {
+    "term": "Bloom filter",
+    "definition": "A compact probabilistic set that can say definitely not present or maybe present. It never has false negatives, but it can have false positives."
+  },
+  {
+    "term": "HyperLogLog",
+    "definition": "A probabilistic counter that estimates the number of distinct items using a small, fixed amount of memory."
+  },
+  {
+    "term": "Count-min sketch",
+    "definition": "A probabilistic frequency counter that uses a fixed-size table and can overestimate counts, but never underestimate them."
+  },
+  {
+    "term": "Geohash",
+    "definition": "A string encoding of a geographic area. Nearby prefixes usually mean nearby places, which makes proximity search cheaper."
+  },
+  {
+    "term": "Trie",
+    "definition": "A tree keyed by characters, used for autocomplete and prefix search."
+  },
+  {
+    "term": "Inverted index",
+    "definition": "A map from a term to the documents that contain it. It is the basic structure behind full-text search."
+  },
+  {
+    "term": "B-tree",
+    "definition": "A balanced tree optimized for disk reads. It is the default index structure in many relational databases."
+  },
+  {
+    "term": "LSM tree",
+    "definition": "A log-structured merge tree: writes go to memory and sorted files, then merge in the background. It favors write throughput over read simplicity."
+  },
+  {
+    "term": "Write-ahead log",
+    "definition": "A durable log written before data pages change, so a database can recover after a crash."
+  },
+  {
+    "term": "Merkle tree",
+    "definition": "A hash tree that lets two replicas find differing blocks without comparing every block."
+  },
+  {
+    "term": "Snowflake ID",
+    "definition": "A time-ordered unique ID made from a timestamp, machine ID and sequence number."
+  },
+  {
+    "term": "Lamport clock",
+    "definition": "A logical counter that gives a partial order to events without relying on synchronized physical clocks."
+  },
+  {
+    "term": "Vector clock",
+    "definition": "A per-node logical clock that can detect whether two events are ordered or concurrent."
+  },
+  {
+    "term": "Gossip protocol",
+    "definition": "A way for nodes to spread membership and failure information by periodically telling a few peers."
+  },
+  {
+    "term": "Lease",
+    "definition": "A lock with an expiry time. If the holder pauses too long, the lease can expire and another node can take over."
+  },
+  {
+    "term": "Fencing token",
+    "definition": "A monotonically increasing number attached to a lease, so a stale lock holder's writes can be rejected."
+  },
+  {
+    "term": "CRDT",
+    "definition": "A conflict-free replicated data type: a data structure that can merge concurrent updates without losing information."
+  },
+  {
+    "term": "Fan-out",
+    "definition": "Sending one event or request to many destinations. Fan-out on write builds feeds ahead of time; fan-out on read builds them when requested."
+  },
+  {
+    "term": "Sharded counter",
+    "definition": "A counter split across many rows or keys, then summed, to avoid one hot row under extreme write load."
+  },
+  {
+    "term": "RPO",
+    "definition": "Recovery point objective: how much data you can afford to lose, measured in time."
+  },
+  {
+    "term": "RTO",
+    "definition": "Recovery time objective: how long the system may take to come back after a failure."
+  }
+]

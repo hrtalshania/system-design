@@ -1,0 +1,56 @@
+{
+  "lesson": {
+    "minWords": 800,
+    "warnWords": 1800,
+    "maxWords": 2400,
+    "minQuizQuestions": 3,
+    "maxQuizQuestions": 5,
+    "requiredHeadings": ["check-yourself", "key-takeaways", "free-references"],
+    "requiredMarkers": [
+      "class=\"callout callout-mental-model\"",
+      "class=\"mermaid\"",
+      "class=\"quiz-block\"",
+      "class=\"discussion\""
+    ],
+    "forbiddenMarkers": ["lorem ipsum", "TODO", "TBD"],
+    "forbiddenSourcePatterns": ["^# "]
+  },
+  "lab": {
+    "minWords": 800,
+    "warnWords": 2000,
+    "maxWords": 2600,
+    "minQuizQuestions": 3,
+    "maxQuizQuestions": 5,
+    "requiredHeadings": ["rubric", "discussion", "key-takeaways", "free-references"],
+    "requiredMarkers": [
+      "class=\"callout callout-mental-model\"",
+      "class=\"mermaid\"",
+      "class=\"quiz-block\"",
+      "class=\"discussion\""
+    ],
+    "forbiddenMarkers": ["lorem ipsum", "TODO", "TBD"],
+    "forbiddenSourcePatterns": ["^# "]
+  },
+  "moduleIntro": {
+    "minWords": 180,
+    "warnWords": 600,
+    "maxWords": 700,
+    "requiredHeadings": ["why-this-module-exists", "what-youll-be-able-to-do", "before-you-start"],
+    "requiredMarkers": [],
+    "forbiddenMarkers": ["lorem ipsum", "TODO", "TBD"],
+    "forbiddenSourcePatterns": ["^# "]
+  },
+  "links": {
+    "requireHttps": true
+  },
+  "warnings": {
+    "phrases": [
+      "in today's fast-paced world",
+      "at the end of the day",
+      "game changer",
+      "obviously",
+      "simply put"
+    ],
+    "maxParagraphWords": 180
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "system-design-path",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An independent, offline, interactive study edition of the Complete System Design Path.",
+  "scripts": {
+    "outline": "node build/parse-outline.mjs",
+    "build": "node build/build.mjs",
+    "validate": "node build/validate.mjs",
+    "test": "node build/test-interactions.mjs",
+    "smoke": "node build/smoke.mjs",
+    "check": "npm run build && npm run validate && npm run test && npm run smoke",
+    "preview": "node build/serve.mjs",
+    "start": "npm run build && npm run preview"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "markdown-it": "^14.1.0",
+    "mermaid": "^11.4.1"
+  },
+  "devDependencies": {
+    "jsdom": "^31.0.1"
+  }
+}
