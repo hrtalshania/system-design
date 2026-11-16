@@ -146,6 +146,28 @@ Every module opens with one introduction page, not a lesson.
 - [ ] Light, dark and mobile visual pass
 - [ ] Deferral list stated
 
+### New widget
+
+- [ ] The prose explains the mechanism before the widget appears
+- [ ] The widget has one job and a visible default state
+- [ ] Every number it prints is consistent with the lesson and the reference run
+- [ ] It is registered in `renderWidgets` and mapped in `build/validate.mjs`
+- [ ] It has an interaction assertion in `build/test-interactions.mjs`
+- [ ] Its route is covered by `build/smoke.mjs`
+- [ ] It works with keyboard, pointer, light mode and dark mode
+- [ ] It fits at 390 px without horizontal scrolling
+- [ ] The README widget list and glossary are updated if needed
+
+### Module close-out order
+
+1. Write the intro and every unit.
+2. Finish reference and continuity passes against the previous module.
+3. Add widgets, glossary terms and lab checklist items.
+4. Update validation, interaction and smoke tests.
+5. Mark the course map complete.
+6. Run `npm run check` and fix every structural failure.
+7. Rebuild `dist/`, inspect desktop and 390 px, then commit source and `dist/` together.
+
 ## 13. Review checklist
 
 Use this when reviewing a module, whether it is your own or someone else's.

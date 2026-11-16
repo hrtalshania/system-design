@@ -1122,6 +1122,11 @@
       if (name === 'upload-path') renderUploadPath(el);
       if (name === 'cdn-offload') renderCdnOffload(el);
       if (name === 'two-server-proof') renderTwoServerProof(el);
+      if (name === 'replica-routing') renderReplicaRouting(el);
+      if (name === 'replica-lag') renderReplicaLag(el);
+      if (name === 'failover-timeline') renderFailoverTimeline(el);
+      if (name === 'backup-restore') renderBackupRestore(el);
+      if (name === 'replica-proof') renderReplicaProof(el);
       if (name === 'lab-checklist') renderLabChecklist(el, lesson);
     });
   }
@@ -3037,6 +3042,476 @@
     update();
   }
 
+  function renderReplicaRouting(root) {
+    root.innerHTML = `
+      <div class="widget-card">
+        <h3>Where does the query go?</h3>
+        <p class="hint">Set the read share and replica count. Writes stay on the primary; replicas only take reads. The knee is whichever ceiling arrives first.</p>
+        <div class="segmented" role="group" aria-label="Read replicas">
+          <button type="button" data-replica-count="1">1 replica</button>
+          <button type="button" data-replica-count="2" class="active">2 replicas</button>
+          <button type="button" data-replica-count="3">3 replicas</button>
+        </div>
+        <div class="slider-row">
+          <label for="routing-load">Offered load</label>
+          <input id="routing-load" type="range" min="600" max="2400" step="100" value="1800">
+          <output for="routing-load"></output>
+        </div>
+        <div class="slider-row">
+          <label for="routing-share">Read share</label>
+          <input id="routing-share" type="range" min="60" max="95" step="1" value="80">
+          <output for="routing-share"></output>
+        </div>
+        <div class="server-grid" data-routing-grid></div>
+        <div class="metric-grid">
+          <div class="metric"><span>Achieved</span><strong data-metric="achieved"></strong></div>
+          <div class="metric"><span>System knee</span><strong data-metric="knee"></strong></div>
+          <div class="metric"><span>Primary CPU</span><strong data-metric="primary"></strong></div>
+          <div class="metric"><span>Replica CPU</span><strong data-metric="replica"></strong></div>
+        </div>
+        <p class="trace-verdict" aria-live="polite"></p>
+      </div>
+    `;
+
+    const loadInput = root.querySelector('#routing-load');
+    const shareInput = root.querySelector('#routing-share');
+    const grid = root.querySelector('[data-routing-grid]');
+    const achievedOut = root.querySelector('[data-metric="achieved"]');
+    const kneeOut = root.querySelector('[data-metric="knee"]');
+    const primaryOut = root.querySelector('[data-metric="primary"]');
+    const replicaOut = root.querySelector('[data-metric="replica"]');
+    const verdict = root.querySelector('.trace-verdict');
+    let replicas = 2;
+
+    const update = () => {
+      const load = Number(loadInput.value);
+      const readShare = Number(shareInput.value) / 100;
+      const writeShare = 1 - readShare;
+      const writeKnee = Math.round(360 / writeShare);
+      const readKnee = Math.round((replicas * 1200) / readShare);
+      const knee = Math.min(writeKnee, readKnee);
+      const achieved = Math.min(load, knee);
+      const writes = achieved * writeShare;
+      const reads = achieved * readShare;
+      const primaryCpu = Math.min(99, (writes / 360) * 100);
+      const replicaCpu = Math.min(100, reads / (replicas * 1200) * 100);
+      const binding = writeKnee <= readKnee ? 'the primary write path' : 'the replica read tier';
+
+      root.querySelector('output[for="routing-load"]').textContent = `${load.toLocaleString()} rps`;
+      root.querySelector('output[for="routing-share"]').textContent = `${Math.round(readShare * 100)}%`;
+      achievedOut.textContent = `${achieved.toLocaleString()} rps`;
+      kneeOut.textContent = `${knee.toLocaleString()} rps`;
+      primaryOut.textContent = `${Math.round(primaryCpu)}%`;
+      replicaOut.textContent = `${Math.round(replicaCpu)}%`;
+
+      grid.innerHTML = `
+        <div class="server-card primary-card">
+          <strong>Primary</strong>
+          <span>${Math.round(writes).toLocaleString()} writes/s · ${Math.round(primaryCpu)}% CPU</span>
+          <div class="load-track"><span class="load-fill${primaryCpu > 90 ? ' danger' : ''}" style="width:${Math.max(2, Math.min(100, primaryCpu))}%"></span></div>
+        </div>
+        ${Array.from({ length: replicas }, (_, index) => `
+          <div class="server-card">
+            <strong>Replica ${index + 1}</strong>
+            <span>${Math.round(reads / replicas).toLocaleString()} reads/s · ${Math.round(replicaCpu)}% CPU</span>
+            <div class="load-track"><span class="load-fill${replicaCpu > 90 ? ' danger' : ''}" style="width:${Math.max(2, Math.min(100, replicaCpu))}%"></span></div>
+          </div>
+        `).join('')}
+      `;
+
+      if (load > knee) {
+        verdict.textContent = `${load.toLocaleString()} offered, ${achieved.toLocaleString()} achieved. The wall is ${binding}; the remaining ${(load - achieved).toLocaleString()} requests per second queue or fail.`;
+      } else {
+        verdict.textContent = `${load.toLocaleString()} offered: ${Math.round(writes).toLocaleString()} writes/s on the primary at ${Math.round(primaryCpu)}%, and ${Math.round(reads / replicas).toLocaleString()} reads/s on each replica at ${Math.round(replicaCpu)}%. The knee is ${knee.toLocaleString()} rps, set by ${binding}.`;
+      }
+    };
+
+    root.querySelectorAll('[data-replica-count]').forEach((button) => {
+      button.addEventListener('click', () => {
+        replicas = Number(button.dataset.replicaCount);
+        root.querySelectorAll('[data-replica-count]').forEach((item) => item.classList.toggle('active', item === button));
+        update();
+      });
+    });
+    loadInput.addEventListener('input', update);
+    shareInput.addEventListener('input', update);
+    update();
+  }
+
+  function renderReplicaLag(root) {
+    root.innerHTML = `
+      <div class="widget-card">
+        <h3>Can Meera see her booking?</h3>
+        <p class="hint">Move the lag slider and switch the read-your-writes rule. The confirmation screen is the moment that matters.</p>
+        <div class="slider-row">
+          <label for="lag-seconds">Replication lag</label>
+          <input id="lag-seconds" type="range" min="0" max="5" step="0.1" value="1.4">
+          <output for="lag-seconds"></output>
+        </div>
+        <label class="check-row">
+          <input id="lag-pin" type="checkbox">
+          <span>Read-your-writes: pin this user to the primary for 5 seconds after a write</span>
+        </label>
+        <div class="flow-chain">
+          <div class="flow-step ok"><span>1</span><strong>Commit</strong><small>primary writes the booking</small></div>
+          <div class="flow-step"><span>2</span><strong>WAL stream</strong><small id="lag-stream">1.4 s behind</small></div>
+          <div class="flow-step" id="lag-final-step"><span>3</span><strong>Confirmation</strong><small id="lag-final">reads the replica</small></div>
+        </div>
+        <div class="metric-grid">
+          <div class="metric"><span>Invisible writes</span><strong data-metric="invisible"></strong></div>
+          <div class="metric"><span>Confirmation</span><strong data-metric="confirmation"></strong></div>
+          <div class="metric"><span>Extra primary reads</span><strong data-metric="extra"></strong></div>
+          <div class="metric"><span>Lag</span><strong data-metric="lag"></strong></div>
+        </div>
+        <p class="trace-verdict" aria-live="polite"></p>
+      </div>
+    `;
+
+    const lagInput = root.querySelector('#lag-seconds');
+    const pinInput = root.querySelector('#lag-pin');
+    const finalStep = root.querySelector('#lag-final-step');
+    const finalText = root.querySelector('#lag-final');
+    const streamText = root.querySelector('#lag-stream');
+    const invisibleOut = root.querySelector('[data-metric="invisible"]');
+    const confirmationOut = root.querySelector('[data-metric="confirmation"]');
+    const extraOut = root.querySelector('[data-metric="extra"]');
+    const lagOut = root.querySelector('[data-metric="lag"]');
+    const verdict = root.querySelector('.trace-verdict');
+
+    const update = () => {
+      const lag = Number(lagInput.value);
+      const pinned = pinInput.checked;
+      const invisible = Math.round(lag * 220);
+      const visible = pinned || lag < 0.05;
+      const extra = pinned ? 90 : 0;
+
+      root.querySelector('output[for="lag-seconds"]').textContent = `${lag.toFixed(1)} s`;
+      streamText.textContent = lag < 0.05 ? 'replica is current' : `${lag.toFixed(1)} s behind`;
+      finalText.textContent = visible ? 'reads the primary' : 'reads the replica';
+      finalStep.classList.toggle('ok', visible);
+      finalStep.classList.toggle('bad', !visible);
+      invisibleOut.textContent = invisible.toLocaleString();
+      confirmationOut.textContent = visible ? 'visible' : 'missing';
+      extraOut.textContent = `${extra}/s`;
+      lagOut.textContent = `${lag.toFixed(1)} s`;
+
+      if (pinned) {
+        verdict.textContent = `The user's reads go to the primary for five seconds after the write. At 1,800 rps that adds about 90 reads per second, or 5% of the total. Meera sees her booking even while the replica is ${lag.toFixed(1)} seconds behind.`;
+      } else if (lag < 0.05) {
+        verdict.textContent = `The replica is current, so the confirmation is correct. This is the happy path; it is not a plan for the moment the replica falls behind.`;
+      } else {
+        verdict.textContent = `At ${lag.toFixed(1)} seconds of lag, about ${invisible.toLocaleString()} writes are invisible. Meera's booking committed, but the confirmation read misses it. She may book again and create a duplicate.`;
+      }
+    };
+
+    lagInput.addEventListener('input', update);
+    pinInput.addEventListener('change', update);
+    update();
+  }
+
+  function renderFailoverTimeline(root) {
+    root.innerHTML = `
+      <div class="widget-card">
+        <h3>Time the failover</h3>
+        <p class="hint">Choose who decides and how writes are replicated. The timeline and the monthly budget change with the answer.</p>
+        <div class="segmented" role="group" aria-label="Failover mode">
+          <button type="button" data-failover-mode="auto" class="active">Automatic + quorum</button>
+          <button type="button" data-failover-mode="manual">Manual runbook</button>
+        </div>
+        <div class="segmented" role="group" aria-label="Replication mode">
+          <button type="button" data-replication-mode="async" class="active">Async replication</button>
+          <button type="button" data-replication-mode="sync">Sync replication</button>
+        </div>
+        <div class="slider-row">
+          <label for="failover-lag">Lag at failure</label>
+          <input id="failover-lag" type="range" min="0.2" max="5" step="0.2" value="1.8">
+          <output for="failover-lag"></output>
+        </div>
+        <ul class="timeline" data-failover-timeline></ul>
+        <div class="metric-grid">
+          <div class="metric"><span>RTO</span><strong data-metric="rto"></strong></div>
+          <div class="metric"><span>RPO</span><strong data-metric="rpo"></strong></div>
+          <div class="metric"><span>Monthly budget</span><strong data-metric="budget"></strong></div>
+          <div class="metric"><span>Mode</span><strong data-metric="mode"></strong></div>
+        </div>
+        <p class="trace-verdict" aria-live="polite"></p>
+      </div>
+    `;
+
+    const timeline = root.querySelector('[data-failover-timeline]');
+    const lagInput = root.querySelector('#failover-lag');
+    const rtoOut = root.querySelector('[data-metric="rto"]');
+    const rpoOut = root.querySelector('[data-metric="rpo"]');
+    const budgetOut = root.querySelector('[data-metric="budget"]');
+    const modeOut = root.querySelector('[data-metric="mode"]');
+    const verdict = root.querySelector('.trace-verdict');
+    let mode = 'auto';
+    let replication = 'async';
+
+    const update = () => {
+      const lag = Number(lagInput.value);
+      const rtoSeconds = mode === 'auto' ? 45 : 720;
+      const rpoWrites = replication === 'sync' ? 0 : Math.round(lag * 180);
+      const budget = (rtoSeconds / 60 / 43.2) * 100;
+      const steps = mode === 'auto'
+        ? [
+            ['00:00', 'Primary stops responding'],
+            ['00:15', 'Health checks fail'],
+            ['00:20', 'Quorum confirms the leader is gone'],
+            ['00:25', 'Replica promoted; old primary fenced'],
+            ['00:35', 'Service discovery updated'],
+            ['00:45', 'First booking succeeds'],
+          ]
+        : [
+            ['00:00', 'Primary stops responding'],
+            ['01:00', 'On-call acknowledges the alert'],
+            ['05:00', 'Engineer verifies the primary is down'],
+            ['07:00', 'Engineer starts promotion'],
+            ['08:00', 'Replica promoted; old primary fenced'],
+            ['10:00', 'Service discovery updated'],
+            ['12:00', 'First booking succeeds'],
+          ];
+
+      root.querySelector('output[for="failover-lag"]').textContent = replication === 'sync' ? 'n/a' : `${lag.toFixed(1)} s`;
+      timeline.innerHTML = steps
+        .map(([time, label]) => `<li><time>${time}</time><span>${label}</span></li>`)
+        .join('');
+      rtoOut.textContent = mode === 'auto' ? '45 s' : '12 min';
+      rpoOut.textContent = `${rpoWrites.toLocaleString()} writes`;
+      budgetOut.textContent = `${budget.toFixed(1)}%`;
+      modeOut.textContent = mode === 'auto' ? 'automatic' : 'manual';
+
+      if (replication === 'sync') {
+        verdict.textContent = `Synchronous replication cuts RPO to zero, but every commit waits for the standby. If the standby is slow or unavailable, writes can block. The ${mode === 'auto' ? '45-second' : '12-minute'} RTO still applies, and fencing is still required.`;
+      } else if (mode === 'auto') {
+        verdict.textContent = `Automatic failover takes 45 seconds, about 1.7% of the 43.2-minute monthly budget. The 1.8-second lag puts up to ${rpoWrites.toLocaleString()} writes at risk; reconcile them after promotion.`;
+      } else {
+        verdict.textContent = `A manual failover takes 12 minutes, ${budget.toFixed(1)}% of the monthly three-nines budget. That is acceptable for a rare event, but two incidents would consume more than half the month. Rehearse the runbook.`;
+      }
+    };
+
+    root.querySelectorAll('[data-failover-mode]').forEach((button) => {
+      button.addEventListener('click', () => {
+        mode = button.dataset.failoverMode;
+        root.querySelectorAll('[data-failover-mode]').forEach((item) => item.classList.toggle('active', item === button));
+        update();
+      });
+    });
+    root.querySelectorAll('[data-replication-mode]').forEach((button) => {
+      button.addEventListener('click', () => {
+        replication = button.dataset.replicationMode;
+        root.querySelectorAll('[data-replication-mode]').forEach((item) => item.classList.toggle('active', item === button));
+        update();
+      });
+    });
+    lagInput.addEventListener('input', update);
+    update();
+  }
+
+  function renderBackupRestore(root) {
+    root.innerHTML = `
+      <div class="widget-card">
+        <h3>How much can you lose?</h3>
+        <p class="hint">Choose a backup cadence, WAL archiving and restore source. RPO is data loss; RTO is time to recover.</p>
+        <div class="slider-row">
+          <label for="backup-cadence">Base backup</label>
+          <select id="backup-cadence">
+            <option value="24">Nightly (02:00)</option>
+            <option value="6">Every 6 hours</option>
+            <option value="1">Hourly</option>
+          </select>
+          <span></span>
+        </div>
+        <div class="slider-row">
+          <label for="backup-wal">WAL archive</label>
+          <select id="backup-wal">
+            <option value="0">Off</option>
+            <option value="60" selected>Every 60 seconds</option>
+            <option value="5">Every 5 seconds</option>
+          </select>
+          <span></span>
+        </div>
+        <div class="slider-row">
+          <label for="backup-source">Restore from</label>
+          <select id="backup-source">
+            <option value="snapshot" selected>Storage snapshot</option>
+            <option value="base">Base backup files</option>
+          </select>
+          <span></span>
+        </div>
+        <div class="slider-row">
+          <label for="backup-size">Database size</label>
+          <input id="backup-size" type="range" min="100" max="1000" step="50" value="400">
+          <output for="backup-size"></output>
+        </div>
+        <label class="check-row">
+          <input id="backup-tested" type="checkbox">
+          <span>We restored this backup in the last quarter</span>
+        </label>
+        <div class="metric-grid">
+          <div class="metric"><span>RPO</span><strong data-metric="rpo"></strong></div>
+          <div class="metric"><span>RTO</span><strong data-metric="rto"></strong></div>
+          <div class="metric"><span>Meets 5 / 45</span><strong data-metric="meets"></strong></div>
+          <div class="metric"><span>Confidence</span><strong data-metric="confidence"></strong></div>
+        </div>
+        <p class="trace-verdict" aria-live="polite"></p>
+      </div>
+    `;
+
+    const cadenceInput = root.querySelector('#backup-cadence');
+    const walInput = root.querySelector('#backup-wal');
+    const sourceInput = root.querySelector('#backup-source');
+    const sizeInput = root.querySelector('#backup-size');
+    const testedInput = root.querySelector('#backup-tested');
+    const rpoOut = root.querySelector('[data-metric="rpo"]');
+    const rtoOut = root.querySelector('[data-metric="rto"]');
+    const meetsOut = root.querySelector('[data-metric="meets"]');
+    const confidenceOut = root.querySelector('[data-metric="confidence"]');
+    const verdict = root.querySelector('.trace-verdict');
+
+    const update = () => {
+      const cadenceHours = Number(cadenceInput.value);
+      const walSeconds = Number(walInput.value);
+      const sizeGb = Number(sizeInput.value);
+      const source = sourceInput.value;
+      const tested = testedInput.checked;
+      const rpoMinutes = walSeconds ? walSeconds / 60 : cadenceHours * 60;
+      const baseMinutes = source === 'snapshot' ? 18 : Math.round((sizeGb * 1000) / 200 / 60);
+      const rtoMinutes = baseMinutes + (walSeconds ? 15 : 5);
+      const meets = rpoMinutes <= 5 && rtoMinutes <= 45;
+
+      root.querySelector('output[for="backup-size"]').textContent = `${sizeGb} GB`;
+      rpoOut.textContent = rpoMinutes >= 60 ? `${Math.round(rpoMinutes / 60)} h` : `${Math.round(rpoMinutes)} min`;
+      rtoOut.textContent = `${rtoMinutes} min`;
+      meetsOut.textContent = meets ? 'yes' : 'no';
+      confidenceOut.textContent = tested ? 'tested' : 'unproven';
+
+      if (!tested) {
+        verdict.textContent = `The arithmetic can look healthy while the restore path is unproven. Run the drill: restore to a target timestamp, validate rows, and book an appointment against the restored database.`;
+      } else if (!meets) {
+        verdict.textContent = `This design misses a target: RPO ${rpoOut.textContent} against 5 minutes, RTO ${rtoMinutes} minutes against 45. Add WAL archiving, use a faster restore source, or accept the larger loss explicitly.`;
+      } else {
+        verdict.textContent = `RPO ${rpoOut.textContent} and RTO ${rtoMinutes} minutes are inside the 5-minute and 45-minute targets. ${source === 'snapshot' ? 'The snapshot restore is the fast part; WAL replay and verification still take time.' : 'The base-backup restore grows with database size; measure it on production-sized data.'}`;
+      }
+    };
+
+    [cadenceInput, walInput, sourceInput, sizeInput, testedInput].forEach((input) => {
+      input.addEventListener('input', update);
+      input.addEventListener('change', update);
+    });
+    update();
+  }
+
+  function renderReplicaProof(root) {
+    root.innerHTML = `
+      <div class="widget-card">
+        <h3>What did the replicas buy?</h3>
+        <p class="hint">Choose a replica count and an offered load. Then kill the primary and read the drill result.</p>
+        <div class="segmented" role="group" aria-label="Read replicas">
+          <button type="button" data-replica-proof="0">No replica</button>
+          <button type="button" data-replica-proof="1">1 replica</button>
+          <button type="button" data-replica-proof="2" class="active">2 replicas</button>
+          <button type="button" data-replica-proof="3">3 replicas</button>
+        </div>
+        <div class="slider-row">
+          <label for="replica-proof-load">Offered load</label>
+          <input id="replica-proof-load" type="range" min="600" max="2400" step="100" value="1800">
+          <output for="replica-proof-load"></output>
+        </div>
+        <div class="server-grid" data-replica-proof-grid></div>
+        <div class="metric-grid">
+          <div class="metric"><span>Achieved</span><strong data-metric="achieved"></strong></div>
+          <div class="metric"><span>p99</span><strong data-metric="p99"></strong></div>
+          <div class="metric"><span>Primary CPU</span><strong data-metric="primary"></strong></div>
+          <div class="metric"><span>Replica CPU</span><strong data-metric="replica"></strong></div>
+        </div>
+        <button class="btn small ghost" id="replica-proof-kill" type="button">Kill the primary</button>
+        <div class="drill-banner" data-drill hidden></div>
+        <p class="trace-verdict" aria-live="polite"></p>
+      </div>
+    `;
+
+    const loadInput = root.querySelector('#replica-proof-load');
+    const grid = root.querySelector('[data-replica-proof-grid]');
+    const achievedOut = root.querySelector('[data-metric="achieved"]');
+    const p99Out = root.querySelector('[data-metric="p99"]');
+    const primaryOut = root.querySelector('[data-metric="primary"]');
+    const replicaOut = root.querySelector('[data-metric="replica"]');
+    const killButton = root.querySelector('#replica-proof-kill');
+    const drill = root.querySelector('[data-drill]');
+    const verdict = root.querySelector('.trace-verdict');
+    let replicas = 2;
+    let failed = false;
+
+    const update = () => {
+      const load = Number(loadInput.value);
+      const knees = [1100, 1500, 1800, 1800];
+      const knee = knees[replicas];
+      const achieved = Math.min(load, knee);
+      const ratio = load / knee;
+      let p99;
+      if (ratio <= 0.5) p99 = 60 + ratio * 80;
+      else if (ratio <= 0.8) p99 = 100 + (ratio - 0.5) * 200;
+      else if (ratio <= 1) p99 = 220 + (ratio - 0.8) * 300;
+      else p99 = 280 + (ratio - 1) * 6000;
+      p99 = Math.min(3500, p99);
+      const writes = achieved * 0.2;
+      const reads = achieved * 0.8;
+      const primaryCpu = replicas === 0 ? Math.min(99, (achieved / 1100) * 100) : Math.min(99, (writes / 360) * 100);
+      const replicaCpu = replicas ? Math.min(99, reads / (replicas * 1200) * 100) : 0;
+
+      root.querySelector('output[for="replica-proof-load"]').textContent = `${load.toLocaleString()} rps`;
+      achievedOut.textContent = `${achieved.toLocaleString()} rps`;
+      p99Out.textContent = `${Math.round(p99).toLocaleString()} ms`;
+      primaryOut.textContent = `${Math.round(primaryCpu)}%`;
+      replicaOut.textContent = replicas ? `${Math.round(replicaCpu)}%` : '—';
+
+      grid.innerHTML = `
+        <div class="server-card primary-card${failed ? ' dead' : ''}">
+          <strong>Primary</strong>
+          <span>${Math.round(writes).toLocaleString()} writes/s${replicas === 0 ? ` + ${Math.round(reads).toLocaleString()} reads/s` : ''} · ${Math.round(primaryCpu)}% CPU</span>
+          <div class="load-track"><span class="load-fill${primaryCpu > 90 ? ' danger' : ''}" style="width:${Math.max(2, Math.min(100, primaryCpu))}%"></span></div>
+        </div>
+        ${Array.from({ length: replicas }, (_, index) => `
+          <div class="server-card">
+            <strong>Replica ${index + 1}</strong>
+            <span>${Math.round(reads / replicas).toLocaleString()} reads/s · ${Math.round(replicaCpu)}% CPU</span>
+            <div class="load-track"><span class="load-fill${replicaCpu > 90 ? ' danger' : ''}" style="width:${Math.max(2, Math.min(100, replicaCpu))}%"></span></div>
+          </div>
+        `).join('')}
+      `;
+
+      if (replicas === 0) {
+        verdict.textContent = `One primary does every read and write. Its knee is about 1,100 rps; at ${load.toLocaleString()} offered it achieves ${achieved.toLocaleString()} and the rest queues.`;
+      } else if (load > knee) {
+        verdict.textContent = `${load.toLocaleString()} offered but ${achieved.toLocaleString()} achieved. The primary's write path is saturated; more replicas add read capacity, not write throughput.`;
+      } else if (replicas === 3) {
+        verdict.textContent = `The third replica lowers read CPU to ${Math.round(replicaCpu)}% but the knee stays at 1,800 rps. The primary still commits every write.`;
+      } else {
+        verdict.textContent = `At ${load.toLocaleString()} rps, p99 is ${Math.round(p99).toLocaleString()} ms. The knee is ${knee.toLocaleString()} rps, ${replicas === 1 ? 'limited by the replica read tier' : 'limited by the primary write path'}.`;
+      }
+    };
+
+    root.querySelectorAll('[data-replica-proof]').forEach((button) => {
+      button.addEventListener('click', () => {
+        replicas = Number(button.dataset.replicaProof);
+        root.querySelectorAll('[data-replica-proof]').forEach((item) => item.classList.toggle('active', item === button));
+        update();
+      });
+    });
+    loadInput.addEventListener('input', update);
+    killButton.addEventListener('click', () => {
+      failed = !failed;
+      drill.hidden = !failed;
+      killButton.textContent = failed ? 'Reset drill' : 'Kill the primary';
+      if (failed) {
+        drill.textContent = 'Reference drill at 1,500 rps: automatic failover took 45 s, lag was 1.6 s, and 480 writes were at risk. Twelve bookings needed human reconciliation. The old primary stayed fenced.';
+      }
+      update();
+    });
+    update();
+  }
+
   const LAB_ITEMS_BY_LESSON = {
     'part-1-m01-l05': [
       'Five clarifying questions for Dr. Rao',
@@ -3077,6 +3552,17 @@
       'A rollout and rollback sequence',
       'A one-page memo to Dr. Rao in plain language',
       'A written answer to the $6 budget question',
+    ],
+    'part-1-m05-l06': [
+      'A baseline table with the gap to every SLO',
+      'A workload routing table with freshness requirements',
+      'A topology showing primary, replica, router and pooler',
+      'A capacity model at 620 and 900 rps',
+      'A read-your-writes rule and lag alert thresholds',
+      'A failover runbook with RTO, RPO and reconciliation',
+      'A backup and PITR plan with a restore drill',
+      'A cost table at or under $220 per month',
+      'A one-page memo to Dr. Rao',
     ],
   };
 

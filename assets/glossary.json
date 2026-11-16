@@ -117,7 +117,7 @@
   },
   {
     "term": "Load balancer",
-    "definition": "A reverse proxy with multiple servers behind it. It chooses a server for each request and stops sending traffic to unhealthy servers."
+    "definition": "A reverse proxy that gives a pool of servers one address and chooses where each request or connection goes."
   },
   {
     "term": "Stateless server",
@@ -125,7 +125,7 @@
   },
   {
     "term": "Connection pool",
-    "definition": "A small set of reusable database connections shared by many requests. It protects the database from too many simultaneous connections."
+    "definition": "A fixed set of open database connections reused by a process. The total across the fleet is what the database must accept."
   },
   {
     "term": "Replica",
@@ -212,16 +212,8 @@
     "definition": "Running several identical servers behind a load balancer so capacity can grow and one failure does not stop the service."
   },
   {
-    "term": "Load balancer",
-    "definition": "A reverse proxy that gives a pool of servers one address and chooses where each request or connection goes."
-  },
-  {
     "term": "Health check",
     "definition": "A probe that decides whether a server should receive traffic. A shallow check tests the process; a readiness check tests its dependencies."
-  },
-  {
-    "term": "Connection pool",
-    "definition": "A fixed set of open database connections reused by a process. The total across the fleet is what the database must accept."
   },
   {
     "term": "Presigned URL",
@@ -326,5 +318,45 @@
   {
     "term": "RTO",
     "definition": "Recovery time objective: how long the system may take to come back after a failure."
+  },
+  {
+    "term": "Read replica",
+    "definition": "A continuously updated read-only copy of a database that serves read queries and can be promoted during failover."
+  },
+  {
+    "term": "Primary database",
+    "definition": "The database node that accepts writes and is the source of truth for replicas."
+  },
+  {
+    "term": "Read-your-writes consistency",
+    "definition": "A guarantee that after a user writes, that user’s subsequent reads see the write."
+  },
+  {
+    "term": "Monotonic reads",
+    "definition": "A guarantee that a user never sees data go backwards in time across successive reads."
+  },
+  {
+    "term": "Asynchronous replication",
+    "definition": "Replication where the primary commits without waiting for a replica to acknowledge, trading a small data-loss window for normal write latency."
+  },
+  {
+    "term": "Synchronous replication",
+    "definition": "Replication where the primary waits for a replica to acknowledge before confirming a commit, reducing RPO at the cost of latency and availability."
+  },
+  {
+    "term": "Promotion",
+    "definition": "The step that turns a read replica into the writable primary during failover."
+  },
+  {
+    "term": "Split-brain",
+    "definition": "A failure where two nodes both believe they are primary and accept writes, leaving divergent histories."
+  },
+  {
+    "term": "Point-in-time recovery",
+    "definition": "Restoring a base backup and replaying archived WAL to a chosen moment, used to recover from deletes or corruption."
+  },
+  {
+    "term": "Restore drill",
+    "definition": "A scheduled test that restores a backup into a clean environment, validates the data and measures recovery time."
   }
 ]

@@ -126,8 +126,14 @@ const expectedIds = [
   'part-1-m04-l07',
   'part-1-m04-l08',
   'part-1-m04-l09',
+  'part-1-m05-l01',
+  'part-1-m05-l02',
+  'part-1-m05-l03',
+  'part-1-m05-l04',
+  'part-1-m05-l05',
+  'part-1-m05-l06',
 ];
-check('Modules 1–4 are written', expectedIds.every((id) => written.some((lesson) => lesson.id === id)));
+check('Modules 1–5 are written', expectedIds.every((id) => written.some((lesson) => lesson.id === id)));
 
 for (const lesson of written) {
   const rules = lesson.kind === 'lab' ? RULES.lab : RULES.lesson;
@@ -174,7 +180,8 @@ check('module 1 is available', modules[0].status === 'available', `status=${modu
 check('module 2 is available', modules[1].status === 'available', `status=${modules[1].status}`);
 check('module 3 is available', modules[2].status === 'available', `status=${modules[2].status}`);
 check('module 4 is available', modules[3].status === 'available', `status=${modules[3].status}`);
-check('modules 5–19 are planned', modules.slice(4).every((module) => module.status === 'planned'));
+check('module 5 is available', modules[4].status === 'available', `status=${modules[4].status}`);
+check('modules 6–19 are planned', modules.slice(5).every((module) => module.status === 'planned'));
 check('part 1 is in progress', parts[0].status === 'in-progress', `status=${parts[0].status}`);
 
 const writtenModuleNumbers = modules.filter((module) => module.writtenCount > 0).map((module) => module.number);
@@ -241,6 +248,12 @@ const moduleWidgets = {
   'part-1-m04-l07': 'cdn-offload',
   'part-1-m04-l08': 'two-server-proof',
   'part-1-m04-l09': 'lab-checklist',
+  'part-1-m05-l01': 'replica-routing',
+  'part-1-m05-l02': 'replica-lag',
+  'part-1-m05-l03': 'failover-timeline',
+  'part-1-m05-l04': 'backup-restore',
+  'part-1-m05-l05': 'replica-proof',
+  'part-1-m05-l06': 'lab-checklist',
 };
 for (const [lessonId, widget] of Object.entries(moduleWidgets)) {
   const lesson = written.find((item) => item.id === lessonId);
@@ -323,7 +336,7 @@ check('search entries have titles', search.every((item) => item.title && item.nu
 
 // ---------- Glossary and resources ----------
 
-check('glossary has 82 terms', (course.glossary || []).length === 82, `actual=${(course.glossary || []).length}`);
+check('glossary has 90 terms', (course.glossary || []).length === 90, `actual=${(course.glossary || []).length}`);
 check('every glossary term has a definition', (course.glossary || []).every((item) => item.term && item.definition));
 check('resources has 16 entries', (course.resources || []).length === 16, `actual=${(course.resources || []).length}`);
 check('every resource has an https URL', (course.resources || []).every((item) => /^https:\/\//.test(item.url)));

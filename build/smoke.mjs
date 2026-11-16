@@ -205,6 +205,42 @@ const routes = [
     counts: { 'data-lab-index': 8, 'quiz-question': 4, '<svg': 1 },
   },
   {
+    hash: '#/lesson/part-1-m05-l01',
+    name: 'lesson-5.1',
+    checks: ['Read replicas', 'replica-routing', 'Where does the query go', 'quiz-question'],
+    counts: { 'quiz-question': 4, '<svg': 1 },
+  },
+  {
+    hash: '#/lesson/part-1-m05-l02',
+    name: 'lesson-5.2',
+    checks: ['Replication lag', 'replica-lag', 'Can Meera see her booking', 'quiz-question'],
+    counts: { 'quiz-question': 4, '<svg': 1 },
+  },
+  {
+    hash: '#/lesson/part-1-m05-l03',
+    name: 'lesson-5.3',
+    checks: ['When the primary dies', 'failover-timeline', 'Time the failover', 'quiz-question'],
+    counts: { 'quiz-question': 4, '<svg': 1 },
+  },
+  {
+    hash: '#/lesson/part-1-m05-l04',
+    name: 'lesson-5.4',
+    checks: ['Backups and recovery', 'backup-restore', 'How much can you lose', 'quiz-question'],
+    counts: { 'quiz-question': 4, '<svg': 1 },
+  },
+  {
+    hash: '#/lesson/part-1-m05-l05',
+    name: 'lesson-5.5',
+    checks: ['Proof: one primary, two replicas', 'replica-proof', 'What did the replicas buy', 'quiz-question'],
+    counts: { 'quiz-question': 4, '<svg': 1 },
+  },
+  {
+    hash: '#/lesson/part-1-m05-l06',
+    name: 'lesson-5.6',
+    checks: ['Lab: Add read replicas to the clinic', 'Lab checklist', 'Rubric', '$220'],
+    counts: { 'data-lab-index': 9, 'quiz-question': 4, '<svg': 1 },
+  },
+  {
     hash: '#/module/part-1-m01',
     name: 'module-intro-1',
     checks: ['Module 1', 'Why this module exists', 'able to do', 'Before you start', 'Start the module'],
@@ -229,15 +265,21 @@ const routes = [
     counts: { 'module-unit-list': 1 },
   },
   {
-    hash: '#/lesson/part-1-m05-l01',
+    hash: '#/module/part-1-m05',
+    name: 'module-intro-5',
+    checks: ['Module 5', 'one database', 'Why this module exists', 'Start the module'],
+    counts: { 'module-unit-list': 1 },
+  },
+  {
+    hash: '#/lesson/part-1-m06-l01',
     name: 'planned',
     checks: ['This lesson is in the outline', 'Go to 1.1', 'Planned'],
   },
   {
     hash: '#/glossary',
     name: 'glossary',
-    checks: ['Glossary', 'Consistent hashing', 'Idempotency key', 'Cache stampede', 'Vertical scaling'],
-    counts: { 'glossary-item': 82 },
+    checks: ['Glossary', 'Consistent hashing', 'Idempotency key', 'Cache stampede', 'Vertical scaling', 'Split-brain'],
+    counts: { 'glossary-item': 90 },
   },
   {
     hash: '#/resources',

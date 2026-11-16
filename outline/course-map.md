@@ -59,12 +59,12 @@
 
 > The servers scale out, but every query still goes to one database. Add read replicas, then deal with what copies bring: lag, failover, backups and recovery.
 
-- [ ] **5.1** Read replicas · 12m
-- [ ] **5.2** Replication lag · 12m
-- [ ] **5.3** When the primary dies · 12m
-- [ ] **5.4** Backups and recovery · 10m
-- [ ] **5.5** Proof: one primary, two replicas · 8m
-- [ ] **5.6** Lab: Add read replicas to the clinic · Lab · 25m
+- [x] **5.1** Read replicas · 12m
+- [x] **5.2** Replication lag · 12m
+- [x] **5.3** When the primary dies · 12m
+- [x] **5.4** Backups and recovery · 10m
+- [x] **5.5** Proof: one primary, two replicas · 8m
+- [x] **5.6** Lab: Add read replicas to the clinic · Lab · 25m
 
 ### 06 · Live updates
 

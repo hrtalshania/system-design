@@ -405,6 +405,81 @@ check('4.8 the verdict says the database is the cap', /database still caps/.test
 await go('#/lesson/part-1-m04-l09');
 check('4.9 lab checklist has 8 items', $$('input[data-lab-index]').length === 8, `actual=${$$('input[data-lab-index]').length}`);
 
+// ---------- Module 5 ----------
+
+await go('#/lesson/part-1-m05-l01');
+check('5.1 renders the routing widget', Boolean($('#routing-load')));
+check('5.1 two replicas set a 1,800 rps knee', $('[data-metric="knee"]').textContent === '1,800 rps', $('[data-metric="knee"]').textContent);
+check('5.1 two replicas achieve 1,800 rps', $('[data-metric="achieved"]').textContent === '1,800 rps', $('[data-metric="achieved"]').textContent);
+$$('[data-replica-count]')[0].click();
+await tick(20);
+check('5.1 one replica is read-bound at 1,500 rps', $('[data-metric="knee"]').textContent === '1,500 rps', $('[data-metric="knee"]').textContent);
+$$('[data-replica-count]')[1].click();
+$('#routing-load').value = '2400';
+$('#routing-load').dispatchEvent(new window.Event('input', { bubbles: true }));
+await tick(20);
+check('5.1 writes cap the system at 1,800 rps', $('[data-metric="achieved"]').textContent === '1,800 rps', $('[data-metric="achieved"]').textContent);
+check('5.1 the verdict names the wall', /wall/.test($('.trace-verdict').textContent || ''), $('.trace-verdict').textContent);
+$('#routing-share').value = '90';
+$('#routing-share').dispatchEvent(new window.Event('input', { bubbles: true }));
+await tick(20);
+check('5.1 a 90/10 mix is read-bound at 2,667 rps', $('[data-metric="knee"]').textContent === '2,667 rps', $('[data-metric="knee"]').textContent);
+
+await go('#/lesson/part-1-m05-l02');
+check('5.2 renders the lag widget', Boolean($('#lag-seconds')));
+check('5.2 1.4 seconds hides 308 writes', $('[data-metric="invisible"]').textContent === '308', $('[data-metric="invisible"]').textContent);
+check('5.2 the confirmation misses the booking', $('[data-metric="confirmation"]').textContent === 'missing', $('[data-metric="confirmation"]').textContent);
+$('#lag-pin').checked = true;
+$('#lag-pin').dispatchEvent(new window.Event('change', { bubbles: true }));
+await tick(20);
+check('5.2 read-your-writes makes the booking visible', $('[data-metric="confirmation"]').textContent === 'visible', $('[data-metric="confirmation"]').textContent);
+check('5.2 the primary pin adds 90 reads/s', $('[data-metric="extra"]').textContent === '90/s', $('[data-metric="extra"]').textContent);
+
+await go('#/lesson/part-1-m05-l03');
+check('5.3 renders the failover widget', Boolean($('#failover-lag')));
+check('5.3 automatic failover takes 45 seconds', $('[data-metric="rto"]').textContent === '45 s', $('[data-metric="rto"]').textContent);
+check('5.3 1.8 seconds risks 324 writes', $('[data-metric="rpo"]').textContent === '324 writes', $('[data-metric="rpo"]').textContent);
+$('[data-failover-mode="manual"]').click();
+await tick(20);
+check('5.3 manual failover takes 12 minutes', $('[data-metric="rto"]').textContent === '12 min', $('[data-metric="rto"]').textContent);
+check('5.3 manual failover uses 27.8% of the budget', $('[data-metric="budget"]').textContent === '27.8%', $('[data-metric="budget"]').textContent);
+$('[data-replication-mode="sync"]').click();
+await tick(20);
+check('5.3 synchronous replication has zero RPO', $('[data-metric="rpo"]').textContent === '0 writes', $('[data-metric="rpo"]').textContent);
+
+await go('#/lesson/part-1-m05-l04');
+check('5.4 renders the backup widget', Boolean($('#backup-cadence')));
+check('5.4 WAL every 60 seconds gives a 1 minute RPO', $('[data-metric="rpo"]').textContent === '1 min', $('[data-metric="rpo"]').textContent);
+check('5.4 snapshot restore meets the 45 minute RTO', $('[data-metric="rto"]').textContent === '33 min', $('[data-metric="rto"]').textContent);
+$('#backup-source').value = 'base';
+$('#backup-source').dispatchEvent(new window.Event('change', { bubbles: true }));
+await tick(20);
+check('5.4 a 400 GB base restore takes 48 minutes', $('[data-metric="rto"]').textContent === '48 min', $('[data-metric="rto"]').textContent);
+$('#backup-wal').value = '0';
+$('#backup-wal').dispatchEvent(new window.Event('change', { bubbles: true }));
+await tick(20);
+check('5.4 without WAL the RPO becomes 24 hours', $('[data-metric="rpo"]').textContent === '24 h', $('[data-metric="rpo"]').textContent);
+check('5.4 without WAL the design misses target', $('[data-metric="meets"]').textContent === 'no', $('[data-metric="meets"]').textContent);
+$('#backup-tested').checked = true;
+$('#backup-tested').dispatchEvent(new window.Event('change', { bubbles: true }));
+await tick(20);
+check('5.4 a restore drill changes confidence', $('[data-metric="confidence"]').textContent === 'tested', $('[data-metric="confidence"]').textContent);
+
+await go('#/lesson/part-1-m05-l05');
+check('5.5 renders the replica proof widget', Boolean($('#replica-proof-load')));
+check('5.5 two replicas achieve 1,800 rps', $('[data-metric="achieved"]').textContent === '1,800 rps', $('[data-metric="achieved"]').textContent);
+check('5.5 p99 is 280 ms at 1,800 rps', $('[data-metric="p99"]').textContent === '280 ms', $('[data-metric="p99"]').textContent);
+check('5.5 the primary is at its write ceiling', $('[data-metric="primary"]').textContent === '99%', $('[data-metric="primary"]').textContent);
+$$('[data-replica-proof]')[0].click();
+await tick(20);
+check('5.5 no replica caps at 1,100 rps', $('[data-metric="achieved"]').textContent === '1,100 rps', $('[data-metric="achieved"]').textContent);
+$('#replica-proof-kill').click();
+await tick(20);
+check('5.5 the failover drill reports 45 seconds', /45 s/.test($('[data-drill]').textContent || ''), $('[data-drill]').textContent);
+
+await go('#/lesson/part-1-m05-l06');
+check('5.6 lab checklist has 9 items', $$('input[data-lab-index]').length === 9, `actual=${$$('input[data-lab-index]').length}`);
+
 // ---------- Module intros ----------
 
 await go('#/module/part-1-m01');
@@ -412,12 +487,17 @@ check('module 1 intro renders', $('.lesson-header h1')?.textContent === 'What is
 check('module 1 intro has five units', $$('.module-unit-list li').length === 5, `actual=${$$('.module-unit-list li').length}`);
 check('module 1 intro offers a start button', /Start the module|Continue with/.test($('.lesson-actions .btn.primary')?.textContent || ''), $('.lesson-actions .btn.primary')?.textContent);
 check('module 1 intro has the required sections', Boolean($('#why-this-module-exists') && $('#what-youll-be-able-to-do') && $('#before-you-start')));
-check('sidebar lists four module overviews', $$('.sidebar .intro-link').length === 4, `actual=${$$('.sidebar .intro-link').length}`);
+check('sidebar lists five module overviews', $$('.sidebar .intro-link').length === 5, `actual=${$$('.sidebar .intro-link').length}`);
 
 await go('#/module/part-1-m04');
 check('module 4 intro renders', $('.lesson-header h1')?.textContent === 'When one server isn’t enough' || $('.lesson-header h1')?.textContent === "When one server isn't enough", $('.lesson-header h1')?.textContent);
 check('module 4 intro has nine units', $$('.module-unit-list li').length === 9, `actual=${$$('.module-unit-list li').length}`);
 check('module 4 intro has the required sections', Boolean($('#why-this-module-exists') && $('#what-youll-be-able-to-do') && $('#before-you-start')));
+
+await go('#/module/part-1-m05');
+check('module 5 intro renders', /When one database isn't enough/.test($('.lesson-header h1')?.textContent || ''), $('.lesson-header h1')?.textContent);
+check('module 5 intro has six units', $$('.module-unit-list li').length === 6, `actual=${$$('.module-unit-list li').length}`);
+check('module 5 intro has the required sections', Boolean($('#why-this-module-exists') && $('#what-youll-be-able-to-do') && $('#before-you-start')));
 
 // ---------- Map, glossary, resources, system lab ----------
 
@@ -428,7 +508,7 @@ check('map marks module 1 available', Boolean($('.map-module .badge.green')));
 check('map links written lessons', $$('.map-lessons a[href="#/lesson/part-1-m01-l01"]').length === 1);
 
 await go('#/glossary');
-check('glossary renders 82 terms', $$('.glossary-item').length === 82, `actual=${$$('.glossary-item').length}`);
+check('glossary renders 90 terms', $$('.glossary-item').length === 90, `actual=${$$('.glossary-item').length}`);
 
 await go('#/resources');
 check('resources renders 16 cards', $$('.resource-card').length === 16, `actual=${$$('.resource-card').length}`);
@@ -443,7 +523,7 @@ await go('#/lesson/part-1-m03-l01');
 check('3.1 lesson renders', /Why cache/.test($('.lesson-header h1')?.textContent || ''), $('.lesson-header h1')?.textContent);
 check('3.1 has four quiz questions', $$('.quiz-question').length === 4, `actual=${$$('.quiz-question').length}`);
 
-await go('#/lesson/part-1-m05-l01');
+await go('#/lesson/part-1-m06-l01');
 check('planned lesson page renders', /in the outline/.test($('.planned-card h2')?.textContent || ''), $('.planned-card h2')?.textContent);
 
 // ---------- Data menu and reset ----------
