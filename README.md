@@ -10,8 +10,8 @@ This is a personal study project. The public syllabus at [sys0.in/path](https://
 - **Under the Hood** — Module 19 algorithm simulations.
 - **System Labs** — 16 “design your own X” case studies.
 - **Reference** — glossary and free external reading.
-- Written so far: **Modules 1–3** (22 path units). Module 1 covers the foundations of design; Module 2 takes the clinic from requirements to requests, data models, indexes, an API, a database choice, a reverse proxy, metrics and a load test; Module 3 covers what to cache, where the copy lives, read/write patterns, invalidation, eviction, cache failure modes and a cache load test.
-- Next: **Module 4 — when one server isn't enough**, then the remaining modules in order.
+- Written so far: **Modules 1–4** (31 path units). Module 1 covers the foundations of design; Module 2 takes the clinic from requirements to requests, data models, indexes, an API, a database choice, a reverse proxy, metrics and a load test; Module 3 covers what to cache, where the copy lives, read/write patterns, invalidation, eviction, cache failure modes and a cache load test; Module 4 covers vertical and horizontal scaling, load balancers, stateless servers, connection pools, object storage, CDNs and a two-server proof.
+- Next: **Module 5**, then the remaining modules in order.
 - Every written module opens with a short overview page (why the module exists, what you'll be able to do, what to know before starting).
 
 The course map, outline, quiz data, progress tracking, notes, search, dark mode and all interactivity work offline in a single HTML file.
@@ -133,7 +133,7 @@ Collapsed longer explanation.
 :::
 ```
 
-Available widgets: `requirements-sorter`, `tradeoff-explorer`, `request-trace`, `index-lab`, `db-picker`, `tail-latency`, `cache-hit-rate`, `cache-placement`, `cache-patterns`, `cache-staleness`, `cache-eviction`, `cache-failure`, `cache-cliff`, `lab-checklist`.
+Available widgets: `requirements-sorter`, `tradeoff-explorer`, `request-trace`, `index-lab`, `db-picker`, `tail-latency`, `cache-hit-rate`, `cache-placement`, `cache-patterns`, `cache-staleness`, `cache-eviction`, `cache-failure`, `cache-cliff`, `scale-vertical`, `scale-horizontal`, `lb-algorithms`, `session-affinity`, `pool-math`, `upload-path`, `cdn-offload`, `two-server-proof`, `lab-checklist`.
 
 Widget names are declared by hand in `assets/app.js`; adding a new one means adding a render function there.
 
@@ -150,8 +150,8 @@ See `outline/course-map.md` for the full map and `outline/source-notes.md` for s
 
 Current deliberately deferred pieces:
 
-- Module 4 onward, in order.
-- The multi-server race visualizer and OTP flood simulator (Modules 4 and 8).
+- Module 5 onward, in order.
+- The OTP flood simulator (Module 8).
 - Full system lab canvases.
 - Sub-page splitting for a single unit that grows past a comfortable reading length. Every unit is already its own addressable page.
 

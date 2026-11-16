@@ -318,6 +318,93 @@ check('3.7 coalescing improves p99', $('[data-metric="p99"]').textContent === '9
 await go('#/lesson/part-1-m03-l08');
 check('3.8 lab checklist has 8 items', $$('input[data-lab-index]').length === 8, `actual=${$$('input[data-lab-index]').length}`);
 
+// ---------- Module 4 widgets ----------
+
+await go('#/lesson/part-1-m04-l01');
+check('4.1 renders the vertical scaling widget', Boolean($('#vertical-size')));
+const verticalBefore = $('[data-metric="p99"]').textContent;
+$('#vertical-traffic').value = '2400';
+$('#vertical-traffic').dispatchEvent(new window.Event('input', { bubbles: true }));
+await tick(20);
+check('4.1 heavy traffic raises p99', $('[data-metric="p99"]').textContent !== verticalBefore, `${verticalBefore} -> ${
+  $('[data-metric="p99"]').textContent
+}`);
+check('4.1 the usage bar turns dangerous', /danger/.test($('.usage-fill').className), $('.usage-fill').className);
+
+await go('#/lesson/part-1-m04-l02');
+check('4.2 renders the horizontal scaling widget', Boolean($('#horizontal-servers')));
+$('#horizontal-servers').value = '3';
+$('#horizontal-servers').dispatchEvent(new window.Event('input', { bubbles: true }));
+$('#horizontal-traffic').value = '1800';
+$('#horizontal-traffic').dispatchEvent(new window.Event('input', { bubbles: true }));
+await tick(20);
+check('4.2 the database caps system capacity', $('[data-metric="system"]').textContent === '1,100 rps', $('[data-metric="system"]').textContent);
+check('4.2 the verdict names the database ceiling', /database caps/.test($('.trace-verdict').textContent || ''), $('.trace-verdict').textContent);
+
+await go('#/lesson/part-1-m04-l03');
+check('4.3 renders the load balancer widget', Boolean($('#lb-mode')));
+$('#lb-mode').value = 'least';
+$('#lb-mode').dispatchEvent(new window.Event('change', { bubbles: true }));
+await tick(20);
+check('4.3 least connections keeps servers under capacity', !/server/.test($('[data-metric="over"]').textContent || ''), $('[data-metric="over"]').textContent);
+$('#lb-mode').value = 'hash';
+$('#lb-mode').dispatchEvent(new window.Event('change', { bubbles: true }));
+await tick(20);
+check('4.3 IP hash concentrates the heavy client', /48 u/.test($('[data-metric="busiest"]').textContent || ''), $('[data-metric="busiest"]').textContent);
+
+await go('#/lesson/part-1-m04-l04');
+check('4.4 renders the session widget', Boolean($('#session-mode')));
+$('button[data-session="kill"]').click();
+await tick(20);
+check('4.4 shared sessions survive a server loss', $('[data-metric="intact"]').textContent === '1,200 / 1,200', $('[data-metric="intact"]').textContent);
+check('4.4 shared sessions need no new sign-ins', $('[data-metric="logins"]').textContent === '0', $('[data-metric="logins"]').textContent);
+$('#session-mode').value = 'sticky';
+$('#session-mode').dispatchEvent(new window.Event('change', { bubbles: true }));
+await tick(20);
+$('button[data-session="kill"]').click();
+await tick(20);
+check('4.4 sticky sessions are lost with the server', $('[data-metric="intact"]').textContent === '800 / 1,200', $('[data-metric="intact"]').textContent);
+check('4.4 sticky sessions force 400 sign-ins', $('[data-metric="logins"]').textContent === '400', $('[data-metric="logins"]').textContent);
+
+await go('#/lesson/part-1-m04-l05');
+check('4.5 renders the pool widget', Boolean($('#pool-size')));
+check('4.5 four pools of twenty exhaust the database', /over|no headroom|refusing/.test($('[data-metric="state"]').textContent || ''), $('[data-metric="state"]').textContent);
+$('#pool-pgbouncer').checked = true;
+$('#pool-pgbouncer').dispatchEvent(new window.Event('change', { bubbles: true }));
+await tick(20);
+check('4.5 PgBouncer restores headroom', $('[data-metric="state"]').textContent === 'stable', $('[data-metric="state"]').textContent);
+check('4.5 PgBouncer multiplexes to 50 backends', $('[data-metric="backends"]').textContent === '50', $('[data-metric="backends"]').textContent);
+
+await go('#/lesson/part-1-m04-l06');
+check('4.6 renders the upload widget', Boolean($('#upload-path')));
+check('4.6 the API path carries the photo bytes', /800\.0 MB/.test($('[data-metric="bytes"]').textContent || ''), $('[data-metric="bytes"]').textContent);
+$('#upload-path').value = 'direct';
+$('#upload-path').dispatchEvent(new window.Event('change', { bubbles: true }));
+await tick(20);
+check('4.6 the direct path keeps bytes out of the API', /KB/.test($('[data-metric="bytes"]').textContent || ''), $('[data-metric="bytes"]').textContent);
+
+await go('#/lesson/part-1-m04-l07');
+check('4.7 renders the CDN widget', Boolean($('#cdn-hit')));
+$('#cdn-hit').value = '50';
+$('#cdn-hit').dispatchEvent(new window.Event('input', { bubbles: true }));
+await tick(20);
+check('4.7 a low hit ratio sends half the traffic home', /50%/.test($('.trace-verdict').textContent || ''), $('.trace-verdict').textContent);
+check('4.7 a low hit ratio raises p99', $('[data-metric="p99"]').textContent === '720 ms', $('[data-metric="p99"]').textContent);
+
+await go('#/lesson/part-1-m04-l08');
+check('4.8 renders the proof widget', Boolean($('#proof-load')));
+$('#proof-load').value = '1200';
+$('#proof-load').dispatchEvent(new window.Event('input', { bubbles: true }));
+await tick(20);
+check('4.8 two servers cap near 1,080 rps', $('[data-metric="achieved"]').textContent === '1,080 rps', $('[data-metric="achieved"]').textContent);
+$$('[data-proof-servers]')[2].click();
+await tick(20);
+check('4.8 a third server adds clients, not throughput', $('[data-metric="achieved"]').textContent === '1,100 rps', $('[data-metric="achieved"]').textContent);
+check('4.8 the verdict says the database is the cap', /database still caps/.test($('.trace-verdict').textContent || ''), $('.trace-verdict').textContent);
+
+await go('#/lesson/part-1-m04-l09');
+check('4.9 lab checklist has 8 items', $$('input[data-lab-index]').length === 8, `actual=${$$('input[data-lab-index]').length}`);
+
 // ---------- Module intros ----------
 
 await go('#/module/part-1-m01');
@@ -325,7 +412,12 @@ check('module 1 intro renders', $('.lesson-header h1')?.textContent === 'What is
 check('module 1 intro has five units', $$('.module-unit-list li').length === 5, `actual=${$$('.module-unit-list li').length}`);
 check('module 1 intro offers a start button', /Start the module|Continue with/.test($('.lesson-actions .btn.primary')?.textContent || ''), $('.lesson-actions .btn.primary')?.textContent);
 check('module 1 intro has the required sections', Boolean($('#why-this-module-exists') && $('#what-youll-be-able-to-do') && $('#before-you-start')));
-check('sidebar lists three module overviews', $$('.sidebar .intro-link').length === 3, `actual=${$$('.sidebar .intro-link').length}`);
+check('sidebar lists four module overviews', $$('.sidebar .intro-link').length === 4, `actual=${$$('.sidebar .intro-link').length}`);
+
+await go('#/module/part-1-m04');
+check('module 4 intro renders', $('.lesson-header h1')?.textContent === 'When one server isn’t enough' || $('.lesson-header h1')?.textContent === "When one server isn't enough", $('.lesson-header h1')?.textContent);
+check('module 4 intro has nine units', $$('.module-unit-list li').length === 9, `actual=${$$('.module-unit-list li').length}`);
+check('module 4 intro has the required sections', Boolean($('#why-this-module-exists') && $('#what-youll-be-able-to-do') && $('#before-you-start')));
 
 // ---------- Map, glossary, resources, system lab ----------
 
@@ -336,7 +428,7 @@ check('map marks module 1 available', Boolean($('.map-module .badge.green')));
 check('map links written lessons', $$('.map-lessons a[href="#/lesson/part-1-m01-l01"]').length === 1);
 
 await go('#/glossary');
-check('glossary renders 75 terms', $$('.glossary-item').length === 75, `actual=${$$('.glossary-item').length}`);
+check('glossary renders 82 terms', $$('.glossary-item').length === 82, `actual=${$$('.glossary-item').length}`);
 
 await go('#/resources');
 check('resources renders 16 cards', $$('.resource-card').length === 16, `actual=${$$('.resource-card').length}`);
@@ -351,7 +443,7 @@ await go('#/lesson/part-1-m03-l01');
 check('3.1 lesson renders', /Why cache/.test($('.lesson-header h1')?.textContent || ''), $('.lesson-header h1')?.textContent);
 check('3.1 has four quiz questions', $$('.quiz-question').length === 4, `actual=${$$('.quiz-question').length}`);
 
-await go('#/lesson/part-1-m04-l01');
+await go('#/lesson/part-1-m05-l01');
 check('planned lesson page renders', /in the outline/.test($('.planned-card h2')?.textContent || ''), $('.planned-card h2')?.textContent);
 
 // ---------- Data menu and reset ----------

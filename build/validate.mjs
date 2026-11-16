@@ -117,8 +117,17 @@ const expectedIds = [
   'part-1-m03-l06',
   'part-1-m03-l07',
   'part-1-m03-l08',
+  'part-1-m04-l01',
+  'part-1-m04-l02',
+  'part-1-m04-l03',
+  'part-1-m04-l04',
+  'part-1-m04-l05',
+  'part-1-m04-l06',
+  'part-1-m04-l07',
+  'part-1-m04-l08',
+  'part-1-m04-l09',
 ];
-check('Modules 1–3 are written', expectedIds.every((id) => written.some((lesson) => lesson.id === id)));
+check('Modules 1–4 are written', expectedIds.every((id) => written.some((lesson) => lesson.id === id)));
 
 for (const lesson of written) {
   const rules = lesson.kind === 'lab' ? RULES.lab : RULES.lesson;
@@ -164,7 +173,8 @@ for (const lesson of written) {
 check('module 1 is available', modules[0].status === 'available', `status=${modules[0].status}`);
 check('module 2 is available', modules[1].status === 'available', `status=${modules[1].status}`);
 check('module 3 is available', modules[2].status === 'available', `status=${modules[2].status}`);
-check('modules 4–19 are planned', modules.slice(3).every((module) => module.status === 'planned'));
+check('module 4 is available', modules[3].status === 'available', `status=${modules[3].status}`);
+check('modules 5–19 are planned', modules.slice(4).every((module) => module.status === 'planned'));
 check('part 1 is in progress', parts[0].status === 'in-progress', `status=${parts[0].status}`);
 
 const writtenModuleNumbers = modules.filter((module) => module.writtenCount > 0).map((module) => module.number);
@@ -222,6 +232,15 @@ const moduleWidgets = {
   'part-1-m03-l06': 'cache-failure',
   'part-1-m03-l07': 'cache-cliff',
   'part-1-m03-l08': 'lab-checklist',
+  'part-1-m04-l01': 'scale-vertical',
+  'part-1-m04-l02': 'scale-horizontal',
+  'part-1-m04-l03': 'lb-algorithms',
+  'part-1-m04-l04': 'session-affinity',
+  'part-1-m04-l05': 'pool-math',
+  'part-1-m04-l06': 'upload-path',
+  'part-1-m04-l07': 'cdn-offload',
+  'part-1-m04-l08': 'two-server-proof',
+  'part-1-m04-l09': 'lab-checklist',
 };
 for (const [lessonId, widget] of Object.entries(moduleWidgets)) {
   const lesson = written.find((item) => item.id === lessonId);
@@ -304,7 +323,7 @@ check('search entries have titles', search.every((item) => item.title && item.nu
 
 // ---------- Glossary and resources ----------
 
-check('glossary has 75 terms', (course.glossary || []).length === 75, `actual=${(course.glossary || []).length}`);
+check('glossary has 82 terms', (course.glossary || []).length === 82, `actual=${(course.glossary || []).length}`);
 check('every glossary term has a definition', (course.glossary || []).every((item) => item.term && item.definition));
 check('resources has 16 entries', (course.resources || []).length === 16, `actual=${(course.resources || []).length}`);
 check('every resource has an https URL', (course.resources || []).every((item) => /^https:\/\//.test(item.url)));

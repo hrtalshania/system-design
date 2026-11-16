@@ -429,7 +429,7 @@ const html = `<!doctype html>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#2457d6">
-  <meta name="description" content="An independent, free, offline interactive edition of the Complete System Design Path. Modules 1–3 are written; the rest is being added in order.">
+  <meta name="description" content="An independent, free, offline interactive edition of the Complete System Design Path. Modules 1–4 are written; the rest is being added in order.">
   <title>System Design Path — Free Interactive Edition</title>
   <style>${css.replace(/<\/style/gi, '<\\/style')}</style>
 </head>

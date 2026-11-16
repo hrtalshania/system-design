@@ -204,6 +204,34 @@
     "definition": "Storage for files such as photos and videos, addressed by a key and served over HTTP rather than stored in a database row."
   },
   {
+    "term": "Vertical scaling",
+    "definition": "Giving one machine more CPU, memory or disk. Simple, but it has a hardware ceiling and leaves a single failure domain."
+  },
+  {
+    "term": "Horizontal scaling",
+    "definition": "Running several identical servers behind a load balancer so capacity can grow and one failure does not stop the service."
+  },
+  {
+    "term": "Load balancer",
+    "definition": "A reverse proxy that gives a pool of servers one address and chooses where each request or connection goes."
+  },
+  {
+    "term": "Health check",
+    "definition": "A probe that decides whether a server should receive traffic. A shallow check tests the process; a readiness check tests its dependencies."
+  },
+  {
+    "term": "Connection pool",
+    "definition": "A fixed set of open database connections reused by a process. The total across the fleet is what the database must accept."
+  },
+  {
+    "term": "Presigned URL",
+    "definition": "A short-lived URL that grants permission to upload or download one object, so the client can talk to storage without the API carrying the bytes."
+  },
+  {
+    "term": "Origin server",
+    "definition": "The source a CDN fetches from on a cache miss. Origin load follows the miss rate, not total traffic."
+  },
+  {
     "term": "Observability",
     "definition": "The ability to understand a system's internal state from its outputs: logs, metrics, traces and events."
   },

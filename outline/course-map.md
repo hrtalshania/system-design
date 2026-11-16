@@ -45,15 +45,15 @@
 
 > Dinner traffic outgrows one server. Scale vertically, then horizontally, and fix what breaks on server two.
 
-- [ ] **4.1** Vertical scaling · 12m
-- [ ] **4.2** Horizontal scaling · 12m
-- [ ] **4.3** Load balancers · 12m
-- [ ] **4.4** Stateless servers · 15m
-- [ ] **4.5** Connection pooling · 10m
-- [ ] **4.6** Object storage: where the photos go · 10m
-- [ ] **4.7** CDN: a cache near the user · 10m
-- [ ] **4.8** Proof: two servers behind a load balancer · 8m
-- [ ] **4.9** Lab: Does the clinic need a second server? · Lab · 25m
+- [x] **4.1** Vertical scaling · 12m
+- [x] **4.2** Horizontal scaling · 12m
+- [x] **4.3** Load balancers · 12m
+- [x] **4.4** Stateless servers · 15m
+- [x] **4.5** Connection pooling · 10m
+- [x] **4.6** Object storage: where the photos go · 10m
+- [x] **4.7** CDN: a cache near the user · 10m
+- [x] **4.8** Proof: two servers behind a load balancer · 8m
+- [x] **4.9** Lab: Does the clinic need a second server? · Lab · 25m
 
 ### 05 · When one database isn't enough
 

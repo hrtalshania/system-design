@@ -1114,6 +1114,14 @@
       if (name === 'cache-eviction') renderCacheEviction(el);
       if (name === 'cache-failure') renderCacheFailure(el);
       if (name === 'cache-cliff') renderCacheCliff(el);
+      if (name === 'scale-vertical') renderScaleVertical(el);
+      if (name === 'scale-horizontal') renderScaleHorizontal(el);
+      if (name === 'lb-algorithms') renderLbAlgorithms(el);
+      if (name === 'session-affinity') renderSessionAffinity(el);
+      if (name === 'pool-math') renderPoolMath(el);
+      if (name === 'upload-path') renderUploadPath(el);
+      if (name === 'cdn-offload') renderCdnOffload(el);
+      if (name === 'two-server-proof') renderTwoServerProof(el);
       if (name === 'lab-checklist') renderLabChecklist(el, lesson);
     });
   }
@@ -2292,6 +2300,743 @@
     update();
   }
 
+  const VERTICAL_SIZES = [
+    { vcpu: 2, cost: 12, capacity: 330 },
+    { vcpu: 4, cost: 24, capacity: 600 },
+    { vcpu: 8, cost: 48, capacity: 1050 },
+    { vcpu: 16, cost: 96, capacity: 1700 },
+    { vcpu: 32, cost: 192, capacity: 2400 },
+  ];
+
+  function renderScaleVertical(root) {
+    root.innerHTML = `
+      <div class="widget-card">
+        <h3>Buy a bigger box</h3>
+        <p class="hint">Pick a machine and a traffic level. The bar shows how much of its capacity you are using.</p>
+        <div class="slider-row">
+          <label for="vertical-size">Machine</label>
+          <select id="vertical-size">
+            ${VERTICAL_SIZES.map(
+              (item) => `<option value="${item.vcpu}"${item.vcpu === 4 ? ' selected' : ''}>${item.vcpu} vCPU · ${item.vcpu * 2} GB</option>`,
+            ).join('')}
+          </select>
+          <span></span>
+        </div>
+        <div class="slider-row">
+          <label for="vertical-traffic">Traffic</label>
+          <input id="vertical-traffic" type="range" min="200" max="2500" step="100" value="900">
+          <output for="vertical-traffic"></output>
+        </div>
+        <div class="usage-track" aria-hidden="true"><span class="usage-fill"></span></div>
+        <div class="usage-labels"><span>0</span><span data-usage-label></span><span data-capacity-label></span></div>
+        <div class="metric-grid">
+          <div class="metric"><span>Capacity</span><strong data-metric="capacity"></strong></div>
+          <div class="metric"><span>Monthly cost</span><strong data-metric="cost"></strong></div>
+          <div class="metric"><span>Cost / 100 rps</span><strong data-metric="unit"></strong></div>
+          <div class="metric"><span>p99 estimate</span><strong data-metric="p99"></strong></div>
+        </div>
+        <p class="trace-verdict" aria-live="polite"></p>
+      </div>
+    `;
+
+    const sizeInput = root.querySelector('#vertical-size');
+    const trafficInput = root.querySelector('#vertical-traffic');
+    const fill = root.querySelector('.usage-fill');
+    const usageLabel = root.querySelector('[data-usage-label]');
+    const capacityLabel = root.querySelector('[data-capacity-label]');
+    const capacityOut = root.querySelector('[data-metric="capacity"]');
+    const costOut = root.querySelector('[data-metric="cost"]');
+    const unitOut = root.querySelector('[data-metric="unit"]');
+    const p99Out = root.querySelector('[data-metric="p99"]');
+    const verdict = root.querySelector('.trace-verdict');
+
+    const update = () => {
+      const size = VERTICAL_SIZES.find((item) => item.vcpu === Number(sizeInput.value)) || VERTICAL_SIZES[1];
+      const traffic = Number(trafficInput.value);
+      const util = traffic / size.capacity;
+
+      let p99;
+      if (util <= 0.6) p99 = 55 + util * 50;
+      else if (util <= 0.9) p99 = 85 + ((util - 0.6) / 0.3) * 215;
+      else p99 = 300 + (util - 0.9) * 3000;
+      p99 = Math.min(3500, p99);
+
+      root.querySelector('output[for="vertical-traffic"]').textContent = `${traffic.toLocaleString()} rps`;
+      capacityOut.textContent = `${size.capacity.toLocaleString()} rps`;
+      costOut.textContent = `$${size.cost}`;
+      unitOut.textContent = `$${(size.cost / (size.capacity / 100)).toFixed(2)}`;
+      p99Out.textContent = `${Math.round(p99).toLocaleString()} ms`;
+
+      const width = Math.max(2, Math.min(100, util * 100));
+      fill.style.width = `${width}%`;
+      fill.className = `usage-fill${util > 1 ? ' danger' : util > 0.8 ? ' warning' : ''}`;
+      usageLabel.textContent = `${Math.round(util * 100)}% used`;
+      capacityLabel.textContent = `${size.capacity.toLocaleString()} rps`;
+
+      if (util > 1) {
+        verdict.textContent = `At ${traffic.toLocaleString()} rps this machine is ${Math.round(util * 100)}% of its capacity. Requests queue, p99 climbs to roughly ${Math.round(p99).toLocaleString()} ms, and adding cores is the only lever this shape offers.`;
+      } else if (util > 0.8) {
+        verdict.textContent = `The machine is at ${Math.round(util * 100)}% of capacity. It meets ${traffic.toLocaleString()} rps today, but one spike moves it into the knee. The database has its own ceiling, and this is still one failure domain.`;
+      } else {
+        verdict.textContent = `Comfortable at ${Math.round(util * 100)}% of capacity for $${size.cost} per month. It buys headroom, not redundancy: one host failure still takes the service down, and the database is unchanged.`;
+      }
+    };
+
+    sizeInput.addEventListener('change', update);
+    trafficInput.addEventListener('input', update);
+    update();
+  }
+
+  const HORIZONTAL_EFFICIENCY = [0, 1, 0.97, 0.94, 0.9, 0.86, 0.81];
+
+  function renderScaleHorizontal(root) {
+    root.innerHTML = `
+      <div class="widget-card">
+        <h3>Add servers, find the shared limit</h3>
+        <p class="hint">Each server adds API capacity until the database becomes the ceiling. One failure must leave enough capacity behind.</p>
+        <div class="slider-row">
+          <label for="horizontal-servers">API servers</label>
+          <input id="horizontal-servers" type="range" min="1" max="6" step="1" value="2">
+          <output for="horizontal-servers"></output>
+        </div>
+        <div class="slider-row">
+          <label for="horizontal-traffic">Traffic</label>
+          <input id="horizontal-traffic" type="range" min="200" max="2400" step="100" value="900">
+          <output for="horizontal-traffic"></output>
+        </div>
+        <div class="usage-track" aria-hidden="true"><span class="usage-fill"></span></div>
+        <div class="usage-labels"><span>0</span><span data-usage-label></span><span data-capacity-label></span></div>
+        <div class="metric-grid">
+          <div class="metric"><span>API capacity</span><strong data-metric="api"></strong></div>
+          <div class="metric"><span>System capacity</span><strong data-metric="system"></strong></div>
+          <div class="metric"><span>After one loss</span><strong data-metric="loss"></strong></div>
+          <div class="metric"><span>DB clients</span><strong data-metric="clients"></strong></div>
+        </div>
+        <p class="trace-verdict" aria-live="polite"></p>
+      </div>
+    `;
+
+    const serversInput = root.querySelector('#horizontal-servers');
+    const trafficInput = root.querySelector('#horizontal-traffic');
+    const fill = root.querySelector('.usage-fill');
+    const usageLabel = root.querySelector('[data-usage-label]');
+    const capacityLabel = root.querySelector('[data-capacity-label]');
+    const apiOut = root.querySelector('[data-metric="api"]');
+    const systemOut = root.querySelector('[data-metric="system"]');
+    const lossOut = root.querySelector('[data-metric="loss"]');
+    const clientsOut = root.querySelector('[data-metric="clients"]');
+    const verdict = root.querySelector('.trace-verdict');
+
+    const update = () => {
+      const servers = Number(serversInput.value);
+      const traffic = Number(trafficInput.value);
+      const apiCapacity = Math.round(servers * 480 * HORIZONTAL_EFFICIENCY[servers]);
+      const systemCapacity = Math.min(1100, apiCapacity);
+      const lossCapacity = servers > 1 ? Math.round((servers - 1) * 480 * HORIZONTAL_EFFICIENCY[servers - 1]) : 0;
+      const clients = servers * 12 + 25;
+      const util = traffic / systemCapacity;
+
+      root.querySelector('output[for="horizontal-servers"]').textContent = servers === 1 ? '1' : String(servers);
+      root.querySelector('output[for="horizontal-traffic"]').textContent = `${traffic.toLocaleString()} rps`;
+      apiOut.textContent = `${apiCapacity.toLocaleString()} rps`;
+      systemOut.textContent = `${systemCapacity.toLocaleString()} rps`;
+      lossOut.textContent = servers === 1 ? 'nothing' : `${lossCapacity.toLocaleString()} rps`;
+      clientsOut.textContent = String(clients);
+
+      const width = Math.max(2, Math.min(100, util * 100));
+      fill.style.width = `${width}%`;
+      fill.className = `usage-fill${util > 1 ? ' danger' : util > 0.85 ? ' warning' : ''}`;
+      usageLabel.textContent = `${Math.round(util * 100)}% used`;
+      capacityLabel.textContent = `${systemCapacity.toLocaleString()} rps`;
+
+      if (traffic > 1100) {
+        verdict.textContent = `The database caps the system near 1,100 rps. With ${servers} API server${servers === 1 ? '' : 's'}, ${traffic.toLocaleString()} rps still pins the database; the extra servers add ${clients} clients, not capacity.`;
+      } else if (traffic > apiCapacity) {
+        verdict.textContent = `${servers} server${servers === 1 ? '' : 's'} provide ${apiCapacity.toLocaleString()} rps of API capacity. At ${traffic.toLocaleString()} rps the fleet is short, and the queue sets the p99.`;
+      } else if (servers > 1 && lossCapacity < traffic) {
+        verdict.textContent = `The fleet meets ${traffic.toLocaleString()} rps today, but after one server dies it has ${lossCapacity.toLocaleString()} rps. You are one failure away from the knee: size for N+1, not N.`;
+      } else if (servers === 1) {
+        verdict.textContent = `One server meets ${traffic.toLocaleString()} rps with no redundancy. Any restart, deploy or host failure is an outage, and the database is still a separate single point.`;
+      } else {
+        verdict.textContent = `The fleet meets ${traffic.toLocaleString()} rps and still has ${lossCapacity.toLocaleString()} rps after one server dies. That is N+1. The database remains the shared limit at about 1,100 rps.`;
+      }
+    };
+
+    serversInput.addEventListener('input', update);
+    trafficInput.addEventListener('input', update);
+    update();
+  }
+
+  const LB_SEQUENCE = ['c1', 'c1', 'c2', 'c3', 'c2', 'c1', 'c3', 'c1', 'c2', 'c3', 'c1', 'c2', 'c3', 'c1', 'c2'];
+  const LB_COST = { c1: 8, c2: 3, c3: 1 };
+  const LB_SERVER_NAMES = ['A', 'B', 'C'];
+  const LB_CAPACITY_UNITS = 30;
+
+  function renderLbAlgorithms(root) {
+    root.innerHTML = `
+      <div class="widget-card">
+        <h3>Balance the requests, or the work?</h3>
+        <p class="hint">Three servers, fifteen requests, and one client whose requests cost eight times the others. Pick an algorithm.</p>
+        <div class="slider-row">
+          <label for="lb-mode">Algorithm</label>
+          <select id="lb-mode">
+            <option value="round">Round robin</option>
+            <option value="least">Least connections</option>
+            <option value="hash">IP hash</option>
+          </select>
+          <span></span>
+        </div>
+        <div class="load-rows" aria-live="polite"></div>
+        <div class="metric-grid">
+          <div class="metric"><span>Busiest server</span><strong data-metric="busiest"></strong></div>
+          <div class="metric"><span>Spread</span><strong data-metric="spread"></strong></div>
+          <div class="metric"><span>Requests</span><strong data-metric="requests"></strong></div>
+          <div class="metric"><span>Above capacity</span><strong data-metric="over"></strong></div>
+        </div>
+        <p class="trace-verdict" aria-live="polite"></p>
+      </div>
+    `;
+
+    const modeInput = root.querySelector('#lb-mode');
+    const rows = root.querySelector('.load-rows');
+    const busiest = root.querySelector('[data-metric="busiest"]');
+    const spread = root.querySelector('[data-metric="spread"]');
+    const requests = root.querySelector('[data-metric="requests"]');
+    const over = root.querySelector('[data-metric="over"]');
+    const verdict = root.querySelector('.trace-verdict');
+
+    const update = () => {
+      const loads = [0, 0, 0];
+      let assignments = [];
+
+      if (modeInput.value === 'round') {
+        assignments = LB_SEQUENCE.map((client, index) => index % 3);
+      } else if (modeInput.value === 'least') {
+        assignments = LB_SEQUENCE.map((client) => {
+          let target = 0;
+          for (let index = 1; index < 3; index += 1) {
+            if (loads[index] < loads[target]) target = index;
+          }
+          loads[target] += LB_COST[client];
+          return target;
+        });
+        loads.fill(0);
+      } else {
+        const mapping = { c1: 0, c2: 1, c3: 2 };
+        assignments = LB_SEQUENCE.map((client) => mapping[client]);
+      }
+
+      assignments.forEach((serverIndex, index) => {
+        loads[serverIndex] += LB_COST[LB_SEQUENCE[index]];
+      });
+
+      const total = loads.reduce((sum, value) => sum + value, 0);
+      const maxLoad = Math.max(...loads);
+      const average = total / 3;
+      const overCount = loads.filter((value) => value > LB_CAPACITY_UNITS).length;
+
+      rows.innerHTML = loads
+        .map(
+          (load, index) => `
+            <div class="load-row">
+              <span>Server ${LB_SERVER_NAMES[index]}</span>
+              <div class="load-track"><span class="load-fill${load > LB_CAPACITY_UNITS ? ' danger' : ''}" style="width:${Math.min(100, (load / 48) * 100)}%"></span></div>
+              <strong>${load} u</strong>
+            </div>
+          `,
+        )
+        .join('');
+
+      busiest.textContent = `${LB_SERVER_NAMES[loads.indexOf(maxLoad)]} · ${maxLoad} u`;
+      spread.textContent = `${(maxLoad / average).toFixed(2)}×`;
+      requests.textContent = String(LB_SEQUENCE.length);
+      over.textContent = overCount ? `${overCount} server${overCount === 1 ? '' : 's'}` : 'none';
+
+      if (modeInput.value === 'round') {
+        verdict.textContent = `Round robin gave each server five requests, but not the same work. Server ${LB_SERVER_NAMES[loads.indexOf(maxLoad)]} caught the heavy client and carries ${maxLoad} units, so it queues while the others idle.`;
+      } else if (modeInput.value === 'least') {
+        verdict.textContent = `Least connections tracked the accumulated work and kept every server at or below ${maxLoad} units. That is what “balanced” means when request costs differ. The catch: it must be able to see current load.`;
+      } else {
+        verdict.textContent = `IP hash kept client c1 on server ${LB_SERVER_NAMES[loads.indexOf(maxLoad)]} for all six of its requests: ${maxLoad} units on one machine. Affinity protects sessions and destroys balance when one client is heavy.`;
+      }
+    };
+
+    modeInput.addEventListener('change', update);
+    update();
+  }
+
+  const TOTAL_SESSIONS = 1200;
+  const SESSIONS_PER_SERVER = 400;
+
+  function renderSessionAffinity(root) {
+    root.innerHTML = `
+      <div class="widget-card">
+        <h3>Where does the session live?</h3>
+        <p class="hint">1,200 sessions across three servers. Change the design, then kill server 2 and count who has to sign in again.</p>
+        <div class="slider-row">
+          <label for="session-mode">Design</label>
+          <select id="session-mode">
+            <option value="shared">Session ID + Redis</option>
+            <option value="sticky">Local memory + sticky routing</option>
+            <option value="local">Local memory, no affinity</option>
+          </select>
+          <span></span>
+        </div>
+        <div class="server-grid" aria-live="polite"></div>
+        <div class="widget-actions">
+          <button class="btn small primary" type="button" data-session="kill">Kill server 2</button>
+          <button class="btn small ghost" type="button" data-session="reset">Reset</button>
+        </div>
+        <div class="metric-grid">
+          <div class="metric"><span>Sessions intact</span><strong data-metric="intact"></strong></div>
+          <div class="metric"><span>Sign-ins needed</span><strong data-metric="logins"></strong></div>
+          <div class="metric"><span>Store reads/s</span><strong data-metric="reads"></strong></div>
+          <div class="metric"><span>Worst-server load</span><strong data-metric="skew"></strong></div>
+        </div>
+        <p class="trace-verdict" aria-live="polite"></p>
+      </div>
+    `;
+
+    const modeInput = root.querySelector('#session-mode');
+    const grid = root.querySelector('.server-grid');
+    const killButton = root.querySelector('[data-session="kill"]');
+    const intactOut = root.querySelector('[data-metric="intact"]');
+    const loginsOut = root.querySelector('[data-metric="logins"]');
+    const readsOut = root.querySelector('[data-metric="reads"]');
+    const skewOut = root.querySelector('[data-metric="skew"]');
+    const verdict = root.querySelector('.trace-verdict');
+
+    let killed = false;
+
+    const update = () => {
+      const mode = modeInput.value;
+      let intact = TOTAL_SESSIONS;
+      let logins = 0;
+      let reads = 0;
+      let skew = 1;
+      let cards = '';
+
+      if (mode === 'shared') {
+        reads = 900;
+        cards = LB_SERVER_NAMES.map(
+          (name, index) => `
+            <div class="server-card${killed && index === 1 ? ' dead' : ''}">
+              <strong>API ${name}</strong>
+              <span>${killed && index === 1 ? 'down' : 'no local sessions'}</span>
+            </div>
+          `,
+        ).join('');
+        cards += `<div class="server-card shared-card"><strong>Redis</strong><span>${intact.toLocaleString()} sessions · ${killed ? 'still serving' : '1,200 stored'}</span></div>`;
+        verdict.textContent = killed
+          ? 'Server 2 is gone. Every session was already in Redis, so the other two servers answer normally. The cost is 900 extra reads per second and one more service to keep alive.'
+          : 'Every request reads the session from Redis. Any server can answer, and a deploy can drain one without logging anyone out.';
+      } else if (mode === 'sticky') {
+        intact = killed ? TOTAL_SESSIONS - SESSIONS_PER_SERVER : TOTAL_SESSIONS;
+        logins = killed ? SESSIONS_PER_SERVER : 0;
+        skew = killed ? 1.8 : 1.4;
+        cards = LB_SERVER_NAMES.map(
+          (name, index) => `
+            <div class="server-card${killed && index === 1 ? ' dead' : ''}">
+              <strong>API ${name}</strong>
+              <span>${killed && index === 1 ? 'down · 400 sessions lost' : `${SESSIONS_PER_SERVER} sessions`}</span>
+            </div>
+          `,
+        ).join('');
+        verdict.textContent = killed
+          ? 'Sticky routing kept the sessions on the server that created them, so killing server 2 logs out its 400 users. The survivors re-pin to the remaining two, which makes the load uneven.'
+          : 'Sticky routing works until it does not: one heavy clinic location can pin most of its users to one server, and that server is now a single point of failure for them.';
+      } else {
+        intact = killed ? Math.round(TOTAL_SESSIONS * (2 / 3)) : Math.round(TOTAL_SESSIONS * (2 / 3));
+        logins = killed ? TOTAL_SESSIONS - intact : TOTAL_SESSIONS - intact;
+        skew = 1;
+        cards = LB_SERVER_NAMES.map(
+          (name, index) => `
+            <div class="server-card${killed && index === 1 ? ' dead' : ''}">
+              <strong>API ${name}</strong>
+              <span>${killed && index === 1 ? 'down' : `${SESSIONS_PER_SERVER} sessions`}</span>
+            </div>
+          `,
+        ).join('');
+        verdict.textContent = killed
+          ? `No affinity and no shared store: 400 sessions died with server 2, and the 800 survivors still lose one request in three when they land on the wrong server. About ${logins} sign-ins are needed.`
+          : 'Without affinity or a shared store, two of every three requests land on the server that holds the session. The other third asks the user to sign in again — before any server has failed.';
+      }
+
+      grid.innerHTML = cards;
+      intactOut.textContent = `${intact.toLocaleString()} / 1,200`;
+      loginsOut.textContent = logins.toLocaleString();
+      readsOut.textContent = reads.toLocaleString();
+      skewOut.textContent = `${skew.toFixed(1)}×`;
+      killButton.textContent = killed ? 'Revive server 2' : 'Kill server 2';
+    };
+
+    killButton.addEventListener('click', () => {
+      killed = !killed;
+      update();
+    });
+    root.querySelector('[data-session="reset"]').addEventListener('click', () => {
+      killed = false;
+      update();
+    });
+    modeInput.addEventListener('change', () => {
+      killed = false;
+      update();
+    });
+    update();
+  }
+
+  function renderPoolMath(root) {
+    root.innerHTML = `
+      <div class="widget-card">
+        <h3>Multiply the pool by the fleet</h3>
+        <p class="hint">Each process holds its own pool. The database only sees the total. Switch on PgBouncer to multiplex.</p>
+        <div class="slider-row">
+          <label for="pool-servers">API servers</label>
+          <input id="pool-servers" type="range" min="1" max="10" step="1" value="4">
+          <output for="pool-servers"></output>
+        </div>
+        <div class="slider-row">
+          <label for="pool-size">Pool per process</label>
+          <input id="pool-size" type="range" min="5" max="30" step="1" value="20">
+          <output for="pool-size"></output>
+        </div>
+        <div class="slider-row">
+          <label for="pool-max">DB max connections</label>
+          <input id="pool-max" type="range" min="50" max="200" step="10" value="100">
+          <output for="pool-max"></output>
+        </div>
+        <label class="check-row">
+          <input id="pool-pgbouncer" type="checkbox">
+          <span>Put PgBouncer in front (25 server connections)</span>
+        </label>
+        <div class="usage-track" aria-hidden="true"><span class="usage-fill"></span></div>
+        <div class="usage-labels"><span>0</span><span data-usage-label></span><span data-max-label></span></div>
+        <div class="metric-grid">
+          <div class="metric"><span>App client connections</span><strong data-metric="clients"></strong></div>
+          <div class="metric"><span>DB connections</span><strong data-metric="backends"></strong></div>
+          <div class="metric"><span>Headroom</span><strong data-metric="headroom"></strong></div>
+          <div class="metric"><span>State</span><strong data-metric="state"></strong></div>
+        </div>
+        <p class="trace-verdict" aria-live="polite"></p>
+      </div>
+    `;
+
+    const serversInput = root.querySelector('#pool-servers');
+    const sizeInput = root.querySelector('#pool-size');
+    const maxInput = root.querySelector('#pool-max');
+    const bouncerInput = root.querySelector('#pool-pgbouncer');
+    const fill = root.querySelector('.usage-fill');
+    const usageLabel = root.querySelector('[data-usage-label]');
+    const maxLabel = root.querySelector('[data-max-label]');
+    const clientsOut = root.querySelector('[data-metric="clients"]');
+    const backendsOut = root.querySelector('[data-metric="backends"]');
+    const headroomOut = root.querySelector('[data-metric="headroom"]');
+    const stateOut = root.querySelector('[data-metric="state"]');
+    const verdict = root.querySelector('.trace-verdict');
+
+    const update = () => {
+      const servers = Number(serversInput.value);
+      const pool = Number(sizeInput.value);
+      const max = Number(maxInput.value);
+      const clients = servers * pool;
+      const backends = bouncerInput.checked ? 25 : clients;
+      const total = backends + 25;
+      const headroom = max - total;
+      const util = total / max;
+
+      root.querySelector('output[for="pool-servers"]').textContent = String(servers);
+      root.querySelector('output[for="pool-size"]').textContent = String(pool);
+      root.querySelector('output[for="pool-max"]').textContent = String(max);
+      clientsOut.textContent = String(clients);
+      backendsOut.textContent = String(total);
+      headroomOut.textContent = headroom >= 0 ? String(headroom) : `${Math.abs(headroom)} over`;
+      stateOut.textContent = headroom < 0 ? 'refusing' : headroom < 10 ? 'no headroom' : 'stable';
+      stateOut.style.color = headroom < 0 ? 'var(--red)' : headroom < 10 ? 'var(--amber)' : 'var(--green)';
+
+      fill.style.width = `${Math.max(2, Math.min(100, util * 100))}%`;
+      fill.className = `usage-fill${util > 1 ? ' danger' : util > 0.9 ? ' warning' : ''}`;
+      usageLabel.textContent = `${total} / ${max}`;
+      maxLabel.textContent = `${max} max`;
+
+      if (headroom < 0) {
+        verdict.textContent = `${servers} servers × ${pool} connections = ${clients} client connections. With ${total} total clients against max ${max}, the database refuses new connections and booking requests fail. The CPU may still be low.`;
+      } else if (bouncerInput.checked) {
+        verdict.textContent = `PgBouncer holds 25 server connections while the fleet keeps ${clients} client connections. The database sees ${total} backends and has ${headroom} slots spare, so one more API server no longer multiplies the backend count.`;
+      } else if (headroom < 10) {
+        verdict.textContent = `${total} clients against ${max} connections leaves ${headroom} slots. A deploy, a monitoring agent or one more server tips it into refusals. Shrink the pool or add a proxy before that happens.`;
+      } else {
+        verdict.textContent = `${servers} servers × ${pool} = ${clients} client connections, plus 25 background, for ${total} of ${max}. Stable today. Add one server and the arithmetic changes by ${pool}.`;
+      }
+    };
+
+    [serversInput, sizeInput, maxInput].forEach((input) => input.addEventListener('input', update));
+    bouncerInput.addEventListener('change', update);
+    update();
+  }
+
+  function renderUploadPath(root) {
+    root.innerHTML = `
+      <div class="widget-card">
+        <h3>Who carries the bytes?</h3>
+        <p class="hint">Compare uploading through the API with a presigned URL that sends the browser straight to the bucket.</p>
+        <div class="slider-row">
+          <label for="upload-path">Path</label>
+          <select id="upload-path">
+            <option value="api">Through the API</option>
+            <option value="direct">Presigned, direct to bucket</option>
+          </select>
+          <span></span>
+        </div>
+        <div class="slider-row">
+          <label for="upload-count">Photos</label>
+          <input id="upload-count" type="range" min="10" max="500" step="10" value="200">
+          <output for="upload-count"></output>
+        </div>
+        <div class="slider-row">
+          <label for="upload-size">Size each</label>
+          <input id="upload-size" type="range" min="1" max="10" step="1" value="4">
+          <output for="upload-size"></output>
+        </div>
+        <div class="metric-grid">
+          <div class="metric"><span>Bytes through API</span><strong data-metric="bytes"></strong></div>
+          <div class="metric"><span>API transfer time</span><strong data-metric="time"></strong></div>
+          <div class="metric"><span>Requests</span><strong data-metric="requests"></strong></div>
+          <div class="metric"><span>Failure surface</span><strong data-metric="risk"></strong></div>
+        </div>
+        <p class="trace-verdict" aria-live="polite"></p>
+      </div>
+    `;
+
+    const pathInput = root.querySelector('#upload-path');
+    const countInput = root.querySelector('#upload-count');
+    const sizeInput = root.querySelector('#upload-size');
+    const bytesOut = root.querySelector('[data-metric="bytes"]');
+    const timeOut = root.querySelector('[data-metric="time"]');
+    const requestsOut = root.querySelector('[data-metric="requests"]');
+    const riskOut = root.querySelector('[data-metric="risk"]');
+    const verdict = root.querySelector('.trace-verdict');
+
+    const update = () => {
+      const count = Number(countInput.value);
+      const size = Number(sizeInput.value);
+      const totalMb = count * size;
+      const direct = pathInput.value === 'direct';
+      const apiMb = direct ? count * 0.001 : totalMb;
+      const apiSeconds = direct ? count * 0.005 : totalMb / 50;
+
+      root.querySelector('output[for="upload-count"]').textContent = String(count);
+      root.querySelector('output[for="upload-size"]').textContent = `${size} MB`;
+      bytesOut.textContent = apiMb < 1 ? `${Math.round(apiMb * 1000)} KB` : `${apiMb.toFixed(1)} MB`;
+      timeOut.textContent = apiSeconds < 1 ? `${Math.round(apiSeconds * 1000)} ms` : `${apiSeconds.toFixed(1)} s`;
+      requestsOut.textContent = String(count);
+      riskOut.textContent = direct ? 'bucket policy' : 'API memory + timeouts';
+
+      if (direct) {
+        verdict.textContent = `The API signs ${count} short-lived URLs and handles about ${Math.round(apiMb * 1000)} KB. The bucket receives ${totalMb} MB directly, and the API process never holds a photo in memory.`;
+      } else {
+        verdict.textContent = `The API carries all ${totalMb} MB through its own process: about ${apiSeconds.toFixed(1)} seconds of pure transfer, plus memory per request. One photo is fine; ${count} at once is a self-inflicted denial of service.`;
+      }
+    };
+
+    pathInput.addEventListener('change', update);
+    countInput.addEventListener('input', update);
+    sizeInput.addEventListener('input', update);
+    update();
+  }
+
+  function renderCdnOffload(root) {
+    root.innerHTML = `
+      <div class="widget-card">
+        <h3>Move the audience, not the origin</h3>
+        <p class="hint">Set daily views and the edge hit ratio. The bar shows how much traffic the origin still carries.</p>
+        <div class="slider-row">
+          <label for="cdn-views">Views per day</label>
+          <input id="cdn-views" type="range" min="10000" max="500000" step="10000" value="100000">
+          <output for="cdn-views"></output>
+        </div>
+        <div class="slider-row">
+          <label for="cdn-hit">Edge hit ratio</label>
+          <input id="cdn-hit" type="range" min="50" max="99" step="1" value="97">
+          <output for="cdn-hit"></output>
+        </div>
+        <div class="slider-row">
+          <label for="cdn-size">Object size</label>
+          <input id="cdn-size" type="range" min="1" max="5" step="1" value="2">
+          <output for="cdn-size"></output>
+        </div>
+        <div class="split-bar" aria-hidden="true">
+          <span class="split-hit"></span>
+          <span class="split-miss"></span>
+        </div>
+        <div class="split-legend">
+          <span><i class="legend-hit"></i> served by the edge</span>
+          <span><i class="legend-miss"></i> reaches the origin</span>
+        </div>
+        <div class="metric-grid">
+          <div class="metric"><span>Origin GB/day</span><strong data-metric="origin"></strong></div>
+          <div class="metric"><span>Origin requests/day</span><strong data-metric="requests"></strong></div>
+          <div class="metric"><span>p99 estimate</span><strong data-metric="p99"></strong></div>
+          <div class="metric"><span>Origin egress/day</span><strong data-metric="cost"></strong></div>
+        </div>
+        <p class="trace-verdict" aria-live="polite"></p>
+      </div>
+    `;
+
+    const viewsInput = root.querySelector('#cdn-views');
+    const hitInput = root.querySelector('#cdn-hit');
+    const sizeInput = root.querySelector('#cdn-size');
+    const hitBar = root.querySelector('.split-hit');
+    const missBar = root.querySelector('.split-miss');
+    const originOut = root.querySelector('[data-metric="origin"]');
+    const requestsOut = root.querySelector('[data-metric="requests"]');
+    const p99Out = root.querySelector('[data-metric="p99"]');
+    const costOut = root.querySelector('[data-metric="cost"]');
+    const verdict = root.querySelector('.trace-verdict');
+
+    const update = () => {
+      const views = Number(viewsInput.value);
+      const hit = Number(hitInput.value) / 100;
+      const size = Number(sizeInput.value);
+      const totalGb = (views * size) / 1024;
+      const originGb = totalGb * (1 - hit);
+      const originRequests = Math.round(views * (1 - hit));
+      const p99 = 120 + (1 - hit) * 1200;
+      const cost = originGb * 0.09;
+
+      root.querySelector('output[for="cdn-views"]').textContent = views.toLocaleString();
+      root.querySelector('output[for="cdn-hit"]').textContent = `${hitInput.value}%`;
+      root.querySelector('output[for="cdn-size"]').textContent = `${size} MB`;
+
+      hitBar.style.width = `${hitInput.value}%`;
+      missBar.style.width = `${100 - hitInput.value}%`;
+      originOut.textContent = `${originGb.toFixed(1)} GB`;
+      requestsOut.textContent = originRequests.toLocaleString();
+      p99Out.textContent = `${Math.round(p99)} ms`;
+      costOut.textContent = `$${cost.toFixed(2)}`;
+
+      if (hit >= 0.95) {
+        verdict.textContent = `The edge absorbs ${Math.round(hit * 100)}% of ${views.toLocaleString()} daily views. The origin serves ${originRequests.toLocaleString()} requests and ${originGb.toFixed(1)} GB, and the p99 is set by the cached path, not the cross-country one.`;
+      } else if (hit >= 0.8) {
+        verdict.textContent = `At a ${Math.round(hit * 100)}% hit ratio the origin still handles ${originRequests.toLocaleString()} requests a day. That is ${originGb.toFixed(1)} GB of egress. Check the TTLs and cache keys before blaming the CDN.`;
+      } else {
+        verdict.textContent = `A ${Math.round(hit * 100)}% hit ratio means ${Math.round((1 - hit) * 100)}% of requests go home. The CDN is a detour with extra latency and a vendor bill; the origin is doing most of the work.`;
+      }
+    };
+
+    [viewsInput, hitInput, sizeInput].forEach((input) => input.addEventListener('input', update));
+    update();
+  }
+
+  const PROOF_EFFICIENCY = [0, 1, 0.97, 0.94];
+
+  function proofModel(servers, load) {
+    const kneeCapacity = servers * 480 * PROOF_EFFICIENCY[servers];
+    const maxThroughput = Math.min(1100, servers * 540);
+    const achieved = Math.min(load, maxThroughput);
+    const apiRatio = achieved / kneeCapacity;
+    const dbUtil = achieved / 1050;
+
+    let p99;
+    if (apiRatio <= 0.6) p99 = 70;
+    else if (apiRatio <= 1) p99 = 70 + ((apiRatio - 0.6) / 0.4) * 190;
+    else p99 = 260 + (apiRatio - 1) * 800;
+    if (dbUtil > 0.9) p99 += (dbUtil - 0.9) * 12000;
+    if (load > achieved) p99 *= Math.min(6, Math.pow(load / achieved, 2.5));
+    p99 = Math.min(3500, p99);
+
+    const dbCpu = Math.min(99, 4 + (achieved / 1050) * 95);
+    const errors = load > achieved ? Math.min(8, ((load - achieved) / load) * 15) : 0;
+    const clients = servers * 12 + 25;
+
+    return { achieved, p99, dbCpu, errors, clients, kneeCapacity };
+  }
+
+  function renderTwoServerProof(root) {
+    root.innerHTML = `
+      <div class="widget-card">
+        <h3>What did the second server actually buy?</h3>
+        <p class="hint">Choose a fleet size and an offered load. The bars show p99 across the test steps; the database tells you when more servers stop helping.</p>
+        <div class="segmented" role="group" aria-label="API servers">
+          <button type="button" data-proof-servers="1">1 server</button>
+          <button type="button" data-proof-servers="2" class="active">2 servers</button>
+          <button type="button" data-proof-servers="3">3 servers</button>
+        </div>
+        <div class="slider-row">
+          <label for="proof-load">Offered load</label>
+          <input id="proof-load" type="range" min="200" max="1400" step="100" value="900">
+          <output for="proof-load"></output>
+        </div>
+        <div class="bar-chart" aria-label="p99 by offered load"></div>
+        <div class="chart-axis"><span>200 rps</span><span>800 rps</span><span>1,400 rps</span></div>
+        <div class="metric-grid">
+          <div class="metric"><span>Achieved</span><strong data-metric="achieved"></strong></div>
+          <div class="metric"><span>p99</span><strong data-metric="p99"></strong></div>
+          <div class="metric"><span>DB CPU</span><strong data-metric="db"></strong></div>
+          <div class="metric"><span>DB clients</span><strong data-metric="clients"></strong></div>
+        </div>
+        <p class="trace-verdict" aria-live="polite"></p>
+      </div>
+    `;
+
+    const loadInput = root.querySelector('#proof-load');
+    const chart = root.querySelector('.bar-chart');
+    const achievedOut = root.querySelector('[data-metric="achieved"]');
+    const p99Out = root.querySelector('[data-metric="p99"]');
+    const dbOut = root.querySelector('[data-metric="db"]');
+    const clientsOut = root.querySelector('[data-metric="clients"]');
+    const verdict = root.querySelector('.trace-verdict');
+    let servers = 2;
+
+    const update = () => {
+      const load = Number(loadInput.value);
+      const model = proofModel(servers, load);
+
+      root.querySelector('output[for="proof-load"]').textContent = `${load.toLocaleString()} rps`;
+      achievedOut.textContent = `${model.achieved.toLocaleString()} rps`;
+      p99Out.textContent = `${Math.round(model.p99).toLocaleString()} ms`;
+      dbOut.textContent = `${Math.round(model.dbCpu)}%`;
+      clientsOut.textContent = String(model.clients);
+
+      const steps = [];
+      for (let offered = 200; offered <= 1400; offered += 100) {
+        const point = proofModel(servers, offered);
+        steps.push({ offered, p99: point.p99 });
+      }
+      chart.innerHTML = steps
+        .map((point) => {
+          const height = Math.max(3, Math.min(100, (point.p99 / 1600) * 100));
+          const level = point.p99 > 400 ? ' danger' : point.p99 > 250 ? ' warning' : '';
+          const current = point.offered === load ? ' current' : '';
+          return `<span class="bar${level}${current}" style="height:${height}%" title="${point.offered} rps: p99 ${Math.round(point.p99)} ms"></span>`;
+        })
+        .join('');
+      chart.setAttribute(
+        'aria-label',
+        `${servers} API servers: p99 across offered load from 200 to 1,400 requests per second. At ${load} offered, achieved ${model.achieved} and p99 ${Math.round(model.p99)} milliseconds.`,
+      );
+
+      if (servers === 3) {
+        verdict.textContent = `Three servers raise API capacity, but the database still caps the system near 1,100 rps. At ${load.toLocaleString()} offered, the extra server adds ${model.clients - 49} database clients and almost no throughput.`;
+      } else if (load > model.achieved) {
+        verdict.textContent = `${load.toLocaleString()} offered but only ${model.achieved.toLocaleString()} achieved. The queue sets the p99 at ${Math.round(model.p99).toLocaleString()} ms and errors reach ${model.errors.toFixed(1)}%. The fleet is past its knee.`;
+      } else if (servers === 2) {
+        verdict.textContent = `Two servers meet ${load.toLocaleString()} rps with p99 ${Math.round(model.p99).toLocaleString()} ms. That is the gain: the knee moved from about 480 to about 930 rps. The database is at ${Math.round(model.dbCpu)}%.`;
+      } else {
+        verdict.textContent = `One server meets ${load.toLocaleString()} rps, but its knee is near 480. There is no redundancy: a deploy or a host failure is an outage.`;
+      }
+    };
+
+    root.querySelectorAll('[data-proof-servers]').forEach((button) => {
+      button.addEventListener('click', () => {
+        servers = Number(button.dataset.proofServers);
+        root.querySelectorAll('[data-proof-servers]').forEach((item) => item.classList.toggle('active', item === button));
+        update();
+      });
+    });
+    loadInput.addEventListener('input', update);
+    update();
+  }
+
   const LAB_ITEMS_BY_LESSON = {
     'part-1-m01-l05': [
       'Five clarifying questions for Dr. Rao',
@@ -2322,6 +3067,16 @@
       'A three-phase load-test plan with a stated pass condition',
       'A one-page topology showing Redis, in-process caches and the database',
       'A written defense of why the free-slot list is not shared-cached',
+    ],
+    'part-1-m04-l09': [
+      'A baseline table with the gap to every SLO',
+      'A capacity model for database and API work per second',
+      'An options table with cost, capacity, redundancy and ops burden',
+      'A decision rule with metric, threshold, window and review trigger',
+      'A quantified failure test for losing the API server',
+      'A rollout and rollback sequence',
+      'A one-page memo to Dr. Rao in plain language',
+      'A written answer to the $6 budget question',
     ],
   };
 
